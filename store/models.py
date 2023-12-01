@@ -21,10 +21,26 @@ PRODUCT_TYPES = [
     ('Cambios', 'Cambios'),
 ]
 
+MAKER_TYPES = [
+    ('Berria', 'Berria'),
+    ('BH', 'BH'),
+    ('CBK', 'CBK'),
+    ('Goka', 'Goka'),
+    ('Massi', 'Massi'),
+    ('Megamo', 'Megamo'),
+    ('MMR ', 'MMR '),
+    ('Monty', 'Monty'),
+    ('MSC', 'MSC'),
+    ('Orbea', 'Orbea'),
+    ('Vitoria', 'Vitoria'),
+    ('Unno', 'Unno'),
+]
+
 class Product(models.Model):
     id = models.BigAutoField(primary_key=True)  # Campo de clave primaria explícito
     name = models.CharField(max_length=200)
-    type = models.CharField(max_length=200,choices=PRODUCT_TYPES,null=True)
+    type = models.CharField(max_length=200,choices=PRODUCT_TYPES,null=True) 
+    maker = models.CharField(max_length=200,choices=MAKER_TYPES,null=True)
     price = models.FloatField()
     digital = models.BooleanField(default=False,null=True, blank=True)
     image = models.ImageField(null=True, blank=True)
