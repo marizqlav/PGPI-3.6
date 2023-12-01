@@ -11,15 +11,16 @@ class Customer(models.Model):
         return self.name
 
 PRODUCT_TYPES = [
+    ('Cuadro', 'Cuadro'),
     ('Manillar', 'Manillar'),
-    ('Rueda', 'Rueda'),
-    ('Freno', 'Freno'),
     ('Sillin', 'Sillin'),
     ('Camara', 'Camara'),
+    ('Rueda', 'Rueda'),
+    ('Freno', 'Freno'),
     ('Pedal', 'Pedal'),
-    ('Cuadro', 'Sillin'),
     ('Cambios', 'Cambios'),
 ]
+
 class Product(models.Model):
     id = models.BigAutoField(primary_key=True)  # Campo de clave primaria explícito
     name = models.CharField(max_length=200)
