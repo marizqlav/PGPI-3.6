@@ -1,25 +1,38 @@
 {% extends 'store/main.html' %}
 {% load static %}
 {% block content %}
-	<div class="row">
-		{% for product in products %}
-		<div class="col-lg-4">
-			<img class="thumbnail" src="{{product.imageURL}}">
-			<div class="box-element product">
-				<h6><strong>{{product.name}}</strong></h6>
-				<hr>
-				<h6>Tipo: <strong>{{product.type}}</strong></h6>
-				<hr>
-				<h6>Fabricante: <strong>{{product.maker}}</strong></h6>
-				<hr>
-				<button data-product="{{product.id}}" data-action="add" class="btn btn-outline-secondary add-btn update-cart">Añadir al carrito</button>
-				
-				<a class="btn btn-outline-success" href="#">Ver</a>
-				<h4 style="display: inline-block; float: right"><strong>${{product.price}}</strong></h4>
+    <div class="row">
+        <form method="get">
+            <select name="product_type" onchange="this.form.submit()">
+				<option value="Cuadro" {% if request.GET.product_type == "Cuadro" %}selected{% endif %}>Cuadro</option>
+				<option value="Manillar" {% if request.GET.product_type == "Manillar" %}selected{% endif %}>Manillar</option>
+				<option value="Sillin" {% if request.GET.product_type == "Sillin" %}selected{% endif %}>Sillin</option>
+				<option value="Camara" {% if request.GET.product_type == "Camara" %}selected{% endif %}>Camara</option>
+				<option value="Rueda" {% if request.GET.product_type == "Rueda" %}selected{% endif %}>Rueda</option>
+				<option value="Freno" {% if request.GET.product_type == "Freno" %}selected{% endif %}>Freno</option>
+				<option value="Pedal" {% if request.GET.product_type == "Pedal" %}selected{% endif %}>Pedal</option>
+				<option value="Cambios" {% if request.GET.product_type == "Cambios" %}selected{% endif %}>Cambios</option>
+            </select>
+        </form>
+        {% for product in products %}
+        <div class="col-lg-4">
+            <img class="thumbnail" src="{{product.imageURL}}">
+            <div class="box-element product">
+               <h6><strong>{{product.name}}</strong></h6>
+				       <hr>
+               <h6>Tipo: <strong>{{product.type}}</strong></h6>
+               <hr>
+               <h6>Fabricante: <strong>{{product.maker}}</strong></h6>
+               <hr>
+               <button data-product="{{product.id}}" data-action="add" class="btn btn-outline-secondary add-btn update-cart">Añadir al carrito</button>
+                
+                <a class="btn btn-outline-success" href="#">Ver</a>
+                <h4 style="display: inline-block; float: right"><strong>${{product.price}}</strong></h4>
 
-			</div>
-		</div>
-		{% endfor %}
-	</div>
+
+            </div>
+        </div>
+        {% endfor %}
+    </div>
 
 {% endblock content %}
