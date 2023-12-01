@@ -11,9 +11,11 @@ def store(request):
     cartItems = data['cartItems']
     order = data['order']
     items = data['items']
-	
-    product_type = request.GET.get('product_type', PRODUCT_TYPES[0][0])
-    products = Product.objects.filter(type=product_type)
+    product_type = request.GET.get('product_type', PRODUCT_TYPES[0][0]) 
+    if product_type == "all":
+        products = Product.objects.all()
+    else:
+        products = Product.objects.filter(type=product_type)
 
     context = {'products':products, 'product_types': PRODUCT_TYPES, 'cartItems':cartItems}
     return render(request, 'store/store.html', context)
@@ -23,8 +25,10 @@ def store_filter(request, product_type):
 	cartItems = data['cartItems']
 	order = data['order']
 	items = data['items']
-	
-	products = Product.objects.filter(type=product_type)
+	if product_type == 'all':
+		products = Product.objects.all()
+	else:
+		products = Product.objects.filter(type=product_type)
 
 	context = {'products':products, 'product_types': PRODUCT_TYPES, 'cartItems':cartItems}
 	return render(request, 'store/store.html', context)
