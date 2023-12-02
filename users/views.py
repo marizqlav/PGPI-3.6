@@ -4,6 +4,8 @@ from django.contrib.auth.views import LoginView, PasswordResetView, PasswordChan
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
 from django.views import View
+
+from store.models import Customer
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 
@@ -36,7 +38,14 @@ class RegisterView(View):
         form = self.form_class(request.POST)
 
         if form.is_valid():
-            form.save()
+            user = form.save()
+
+            # Crear un objeto Customer relacionado con el usuario registrado
+            customer = Customer.objects.create(
+                user=user,
+                name=user.username,  # Puedes cambiar esto según el nombre que quieras asignar al Customer
+                email=user.email  # Usa el email del usuario para el Customer
+            )
 
             username = form.cleaned_data.get('username')
             messages.success(request, f'Account created for {username}')
