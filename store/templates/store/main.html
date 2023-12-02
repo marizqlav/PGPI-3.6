@@ -77,7 +77,18 @@
 	 
 	    </ul>
 	    <div class="form-inline my-2 my-lg-0">
-	     	<a href="#"class="btn btn-warning">Login</a>
+			<div class="form-inline my-2 my-lg-0">
+				<div class="collapse navbar-collapse" id="navbarCollapse">
+				  <div class="navbar-nav ml-auto">
+					{% if user.is_authenticated %}
+					  <a href="{% url 'users-profile' %}" class="nav-item nav-link">Mi perfil</a>
+					  <a href="{% url 'logout' %}" class="nav-item nav-link">Cerrar sesión</a>
+					{% else %}
+					  <a href="{% url 'login' %}" class="nav-item nav-link">Iniciar sesión</a>
+					{% endif %}
+  
+				  </div>
+			  </div>
 	     	
 	     	<a href="{% url 'cart' %}">
 	    		<img  id="cart-icon" src="{% static 'images/cart.png' %}">
