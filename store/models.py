@@ -17,7 +17,7 @@ PRODUCT_TYPES = [
     ('Sillin', 'Sillin'),
     ('Camara', 'Camara'),
     ('Pedal', 'Pedal'),
-    ('Cuadro', 'Sillin'),
+    ('Cuadro', 'Cuadro'),
     ('Cambios', 'Cambios'),
 ]
 
