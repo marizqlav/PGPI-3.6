@@ -58,6 +58,28 @@ def storeMain(request):
     context = {'products':products, 'product_types': PRODUCT_TYPES, 'maker_types': MAKER_TYPES, 'cartItems':cartItems}
     return render(request, 'store/store_main.html', context)
 
+def storeMain(request):
+    data = cartData(request)
+    cartItems = data['cartItems']
+    order = data['order']
+    items = data['items']
+    product_type = request.GET.get('product_type', 'all') or 'all'
+    maker = request.GET.get('maker', 'all') or 'all'
+    search = request.GET.get('search', '')
+
+    products = Product.objects.all()
+
+    if search:
+        products = products.filter(name__icontains=search)
+
+    if product_type != "all":
+        products = products.filter(type=product_type)
+
+    if maker != "all":
+        products = products.filter(maker=maker)
+
+    context = {'products':products, 'product_types': PRODUCT_TYPES, 'maker_types': MAKER_TYPES, 'cartItems':cartItems}
+    return render(request, 'store/store_main.html', context)
 
 def cart(request):
 	data = cartData(request)

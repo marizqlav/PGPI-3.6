@@ -60,7 +60,6 @@ class Product(models.Model):
 	image = models.ImageField(null=True, blank=True)
 	stock_no = models.CharField(max_length=100, null=True, blank=True)
 
-
 	def __str__(self):
 		return self.name
 
@@ -72,6 +71,7 @@ class Product(models.Model):
 			url = ''
 		return url
 
+	
 class Order(models.Model):
 	id = models.BigAutoField(primary_key=True)  # Campo de clave primaria explícito
 	customer = models.ForeignKey(Customer, on_delete=models.SET_NULL, null=True, blank=True)
@@ -95,18 +95,18 @@ class Order(models.Model):
 			if i.product.digital == False:
 				shipping = True
 		return shipping
-
+	
 	@property
 	def get_cart_total(self):
 		orderitems = self.orderitem_set.all()
 		total = sum([item.get_total for item in orderitems])
 		return total 
-
 	@property
 	def get_cart_items(self):
 		orderitems = self.orderitem_set.all()
 		total = sum([item.quantity for item in orderitems])
 		return total 
+
 
 class OrderItem(models.Model): 
 	id = models.BigAutoField(primary_key=True)  # Campo de clave primaria explícito
@@ -115,11 +115,12 @@ class OrderItem(models.Model):
 	quantity = models.IntegerField(default=0, null=True, blank=True)
 	date_added = models.DateTimeField(auto_now_add=True)
 	status = models.CharField(max_length=2, choices=STATUS_CHOICES, default='PL')
-
+	
 	@property
 	def get_total(self):
 		total = self.product.price * self.quantity
 		return total
+
 
 class ShippingAddress(models.Model):
 	id = models.BigAutoField(primary_key=True)  # Campo de clave primaria explícito
@@ -130,6 +131,6 @@ class ShippingAddress(models.Model):
 	state = models.CharField(max_length=200, null=False)
 	zipcode = models.CharField(max_length=200, null=False)
 	date_added = models.DateTimeField(auto_now_add=True)
-
+	
 	def __str__(self):
 		return self.address
