@@ -131,3 +131,10 @@ MEDIA_URL = '/images/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'static/images')
 
 LOGIN_REDIRECT_URL = '/users/profile/'
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587  # Puerto de Gmail
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'pgpitienda@gmail.com'  # Tu dirección de correo de Gmail
+EMAIL_HOST_PASSWORD = 'jomw hjod fvkn fgjd'
