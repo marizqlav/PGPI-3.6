@@ -1,0 +1,98 @@
+{% extends 'store/main.html' %}
+{% block content %}
+    {% if user.is_staff %}
+
+        <h1>Guest Orders</h1>
+        <style>
+            table, th, td {
+                border: 1px solid black;
+                border-collapse: collapse;
+                text-align: center;
+                vertical-align: middle;
+            }
+        </style>
+
+        <div style="text-align: right;">
+            <h2>Status Codes:</h2>
+            <span>PL: Placed | </span>
+            <span>PR: Processing | </span>
+            <span>SH: Shipped | </span>
+            <span>DE: Delivered</span>
+        </div>
+        <form method="get">
+            <label for="order_by">Order by:</label>
+            <select name="order_by" id="order_by" onchange="this.form.submit()">
+                <option value="id">Order ID</option>
+                <option value="get_cart_total">Lowest Total</option>
+                <option value="date_ordered">Recent Date</option>
+                <option value="-date_ordered">Latest Date</option>
+            </select>
+            <label for="status">Status:</label>
+            <select name="status" id="status" onchange="this.form.submit()">
+                <option value="">All</option>
+                <option value="PL">Placed</option>
+                <option value="PR">Processing</option>
+                <option value="SH">Shipped</option>
+                <option value="DE">Delivered</option>
+            </select>
+
+        </form>
+
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Order ID</th>
+                    <th>Status</th>
+                    <th>Total</th>
+                    <th>Date Ordered</th>
+                    <th>Complete</th>
+                    <th>Tracking Number</th>
+                    <th>Estimated Delivery Date</th>
+                    <th>Products</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in page_obj %}
+                <tr>
+                    <td>{{ order.id }}</td>
+                    <td>{{ order.status }}</td>
+                    <td>{{ order.get_cart_total }}</td>
+                    <td>{{ order.date_ordered }}</td>
+                    <td>{{ order.complete }}</td>
+                    <td>{{ order.tracking_number|default:"No se ha asignado un número de seguimiento" }}</td>
+                    <td>{{ order.estimated_delivery_date }}</td>
+                    <td>
+                        <ul>
+                            {% for item in order.orderitem_set.all %}
+                                <li>{{ item.product.name }}: {{ item.quantity }}</li>
+                            {% endfor %}
+                        </ul>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="pagination">
+            <span class="step-links">
+                {% if page_obj.has_previous %}
+                    <a href="?page=1">&laquo; first</a>
+                    <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+                {% endif %}
+
+                <span class="current">
+                    Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+                </span>
+
+                {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}">next</a>
+                    <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+                {% endif %}
+            </span>
+        </div>
+    {% else %}
+        <h1>Access Denied</h1>
+        <p>You do not have permission to view this page.</p>
+    {% endif %}
+{% endblock content %}
