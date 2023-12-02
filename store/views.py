@@ -6,32 +6,50 @@ from .models import *
 from .utils import cookieCart, cartData, guestOrder
 
 def store(request):
-    
     data = cartData(request)
     cartItems = data['cartItems']
     order = data['order']
     items = data['items']
-    product_type = request.GET.get('product_type', PRODUCT_TYPES[0][0]) 
-    if product_type == "all":
-        products = Product.objects.all()
-    else:
-        products = Product.objects.filter(type=product_type)
+    product_type = request.GET.get('product_type', 'all') or 'all'
+    maker = request.GET.get('maker', 'all') or 'all'
+    search = request.GET.get('search', '')
 
-    context = {'products':products, 'product_types': PRODUCT_TYPES, 'cartItems':cartItems}
+    products = Product.objects.all()
+
+    if search:
+        products = products.filter(name__icontains=search)
+
+    if product_type != "all":
+        products = products.filter(type=product_type)
+
+    if maker != "all":
+        products = products.filter(maker=maker)
+
+    context = {'products':products, 'product_types': PRODUCT_TYPES, 'maker_types': MAKER_TYPES, 'cartItems':cartItems}
     return render(request, 'store/store.html', context)
 
-def store_filter(request, product_type):
-	data = cartData(request)
-	cartItems = data['cartItems']
-	order = data['order']
-	items = data['items']
-	if product_type == 'all':
-		products = Product.objects.all()
-	else:
-		products = Product.objects.filter(type=product_type)
+def storeMain(request):
+    data = cartData(request)
+    cartItems = data['cartItems']
+    order = data['order']
+    items = data['items']
+    product_type = request.GET.get('product_type', 'all') or 'all'
+    maker = request.GET.get('maker', 'all') or 'all'
+    search = request.GET.get('search', '')
 
-	context = {'products':products, 'product_types': PRODUCT_TYPES, 'cartItems':cartItems}
-	return render(request, 'store/store.html', context)
+    products = Product.objects.all()
+
+    if search:
+        products = products.filter(name__icontains=search)
+
+    if product_type != "all":
+        products = products.filter(type=product_type)
+
+    if maker != "all":
+        products = products.filter(maker=maker)
+
+    context = {'products':products, 'product_types': PRODUCT_TYPES, 'maker_types': MAKER_TYPES, 'cartItems':cartItems}
+    return render(request, 'store/store_main.html', context)
 
 def cart(request):
 	data = cartData(request)

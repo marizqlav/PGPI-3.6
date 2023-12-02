@@ -2,38 +2,59 @@
 {% load static %}
 {% block content %}
     <div class="row">
-        <form method="get">
-            <select name="product_type" onchange="this.form.submit()">
-				<option value="all" {% if request.GET.product_type == "all" %}selected{% endif %}>Todos</option>
-				<option value="Cuadro" {% if request.GET.product_type == "Cuadro" %}selected{% endif %}>Cuadro</option>
-				<option value="Manillar" {% if request.GET.product_type == "Manillar" %}selected{% endif %}>Manillar</option>
-				<option value="Sillin" {% if request.GET.product_type == "Sillin" %}selected{% endif %}>Sillin</option>
-				<option value="Camara" {% if request.GET.product_type == "Camara" %}selected{% endif %}>Camara</option>
-				<option value="Rueda" {% if request.GET.product_type == "Rueda" %}selected{% endif %}>Rueda</option>
-				<option value="Freno" {% if request.GET.product_type == "Freno" %}selected{% endif %}>Freno</option>
-				<option value="Pedal" {% if request.GET.product_type == "Pedal" %}selected{% endif %}>Pedal</option>
-				<option value="Cambios" {% if request.GET.product_type == "Cambios" %}selected{% endif %}>Cambios</option>
-            </select>
-        </form>
-        {% for product in products %}
-        <div class="col-lg-4">
-            <img class="thumbnail" src="{{product.imageURL}}">
-            <div class="box-element product">
-               <h6><strong>{{product.name}}</strong></h6>
-				       <hr>
-               <h6>Tipo: <strong>{{product.type}}</strong></h6>
-               <hr>
-               <h6>Fabricante: <strong>{{product.maker}}</strong></h6>
-               <hr>
-               <button data-product="{{product.id}}" data-action="add" class="btn btn-outline-secondary add-btn update-cart">Añadir al carrito</button>
-                
-                <a class="btn btn-outline-success" href="#">Ver</a>
-                <h4 style="display: inline-block; float: right"><strong>${{product.price}}</strong></h4>
-
-
-            </div>
+        <div class="col-lg-8 align-self-end">
+            <form method="get" class="form-inline">
+                <input type="hidden" name="product_type" value="{{ request.GET.product_type }}">
+                <input type="hidden" name="maker" value="{{ request.GET.maker }}">
+                <input type="text" name="search" placeholder="Buscar productos..." class="form-control mr-2 flex-grow-1" value="{{ request.GET.search }}">
+                <input type="submit" value="Buscar" class="btn btn-primary">
+            </form>
         </div>
-        {% endfor %}
+        <div class="col-lg-2 align-self-end">
+            <form method="get" class="form-inline">
+                <input type="hidden" name="search" value="{{ request.GET.search }}">
+                <input type="hidden" name="maker" value="{{ request.GET.maker }}">
+                <h6>Tipo Producto</h6>
+                <select name="product_type" onchange="this.form.submit()" class="form-control mr-2 flex-grow-1">
+                    <option value="all" {% if request.GET.product_type == "all" %}selected{% endif %}>Todos</option>
+                    {% for product in product_types %}
+                    <option value="{{ product.0 }}" {% if request.GET.product_type == product.0 %}selected{% endif %}>{{ product.1 }}</option>
+                    {% endfor %}
+                </select>
+            </form>
+        </div>
+        <div class="col-lg-2 align-self-end">
+            <form method="get" class="form-inline">
+                <input type="hidden" name="search" value="{{ request.GET.search }}">
+                <input type="hidden" name="product_type" value="{{ request.GET.product_type }}">
+                <h6>Fabricante</h6>
+                <select name="maker" onchange="this.form.submit()" class="form-control mr-2 flex-grow-1">
+                    <option value="all" {% if request.GET.maker == "all" %}selected{% endif %}>Todos</option>
+                    {% for maker in maker_types %}
+                    <option value="{{ maker.0 }}" {% if request.GET.maker == maker.0 %}selected{% endif %}>{{ maker.1 }}</option>
+                    {% endfor %}
+                </select>
+            </form>
+        </div>
     </div>
 
+    <div class="row">
+        {% for product in products %}
+            <div class="col-lg-4">
+                <img class="thumbnail" src="{{product.imageURL}}">
+                <div class="box-element product">
+                    <h6><strong>{{product.name}}</strong></h6>
+                            <hr>
+                    <h6>Tipo: <strong>{{product.type}}</strong></h6>
+                    <hr>
+                    <h6>Fabricante: <strong>{{product.maker}}</strong></h6>
+                    <hr>
+                    <button data-product="{{product.id}}" data-action="add" class="btn btn-outline-secondary add-btn update-cart">Añadir al carrito</button>
+                        
+                        <a class="btn btn-outline-success" href="#">Ver</a>
+                        <h4 style="display: inline-block; float: right"><strong>${{product.price}}</strong></h4>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
 {% endblock content %}
