@@ -1,0 +1,18 @@
+{% extends "users/base.html" %}
+{% block title %}Cerrar sesión{% endblock title %}
+{% block content %}
+    <hr>
+    <div class="container d-flex justify-content-center align-items-center vh-100">
+        <div class="card" style="width: 18rem;">
+            <div class="card-body text-center">
+                <h5 class="card-title">Se ha cerrado la sesión</h5>
+                <p class="card-text">
+                    Muchas gracias por usar la aplicación. Esperamos que vuelvas pronto.
+                </p>
+                <br><hr><a href="{% url 'login' %}" class="btn btn-primary">Iniciar sesión de nuevo</a>
+            </div>
+        </div>
+    </div>
+
+
+{% endblock content %}
