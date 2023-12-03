@@ -15,44 +15,44 @@
                     </div>
 
 					<div class="form-field">
-						<label for="delivery_option">Delivery Option:</label>
+						<label for="delivery_option">Opciones de entrega:</label>
 						<select id="delivery_option" name="delivery_option">
-							<option value="">Select a delivery option</option>
-							<option value="store_pickup">Store Pickup</option>
-							<option value="home_delivery">Home Delivery</option>
+							<option value="">Selecciona un método de entrega</option>
+							<option value="store_pickup">Recoger en tienda</option>
+							<option value="home_delivery">A domicilio</option>
 						</select>
 					</div>
 
 					<div id="shipping-info">
 						<hr>
-						<p>Shipping Information:</p>
+						<p>Información de compra:</p>
 						<hr>
 						<div class="form-field">
-							<input class="form-control" type="text" name="address" placeholder="Address..">
+							<input class="form-control" type="text" name="address" placeholder="Dirección..">
 						</div>
 						<div class="form-field">
-							<input class="form-control" type="text" name="city" placeholder="City..">
+							<input class="form-control" type="text" name="city" placeholder="Ciudad..">
 						</div>
 						<div class="form-field">
-							<input class="form-control" type="text" name="state" placeholder="State..">
+							<input class="form-control" type="text" name="state" placeholder="Provincia..">
 						</div>
 						<div class="form-field">
-							<input class="form-control" type="text" name="zipcode" placeholder="Zip code..">
+							<input class="form-control" type="text" name="zipcode" placeholder="Código postal..">
 						</div>
 						<div class="form-field">
-							<input class="form-control" type="text" name="country" placeholder="Zip code..">
+							<input class="form-control" type="text" name="country" placeholder="Pais..">
 						</div>
 					</div>
 
 					<hr>
-					<input id="form-button" class="btn btn-success btn-block" type="submit" value="Continue">
+					<input id="form-button" class="btn btn-success btn-block" type="submit" value="Continuar">
 				</form>
 			</div>
 
 			<br>
 			<div class="box-element hidden" id="payment-info">
-				<small>Paypal Options</small>
-				<button id="make-payment">Make payment</button>
+				<small>Opciones de Paypal</small>
+				<button id="make-payment">Hacer pago</button>
 				<div id="paypal-button-container"></div>
 			</div>
 			
@@ -60,9 +60,9 @@
 
 		<div class="col-lg-6">
 			<div class="box-element">
-				<a  class="btn btn-outline-dark" href="{% url 'cart' %}">&#x2190; Back to Cart</a>
+				<a  class="btn btn-outline-dark" href="{% url 'cart' %}">&#x2190; Volver al carrito</a>
 				<hr>
-				<h3>Order Summary</h3>
+				<h3>Resumen del pedido</h3>
 				<hr>
 				{% for item in items %}
 				<div class="cart-row">
@@ -162,7 +162,7 @@
 			if (parseFloat(total) > 0) {
 				submitFormData();
 			} else {
-				alert('Total must be greater than 0 to make a payment');
+				alert('El total debe ser mayor a 0 euros para poder realizar el pago');
 			}
 		}) 
 	    

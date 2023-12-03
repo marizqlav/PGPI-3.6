@@ -20,7 +20,7 @@ from django.conf import settings
 from django.views.generic import RedirectView
 
 urlpatterns = [
-    path('', RedirectView.as_view(url='store/', permanent=True)),
+    path('', RedirectView.as_view(url='store/catalog/', permanent=True)),
     path('admin/', admin.site.urls),
     path('store/', include('store.urls')),
     path('users/', include('users.urls')),
