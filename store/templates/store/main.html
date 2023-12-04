@@ -113,7 +113,16 @@
 			  <a class="nav-link" href="{% url 'guest_orders' %}">Todos los pedidos</a>
 		  </li>
 	 	 {% endif %}
-
+		  {% if user.is_authenticated and not user.is_staff%}
+		  <li class="nav-item">
+			<a class="nav-link" href="/claims/claims">Reclamaciones <span class="sr-only"></span></a>
+		  </li>
+		  {% endif %}
+		  {% if user.is_staff %}
+		  <li class="nav-item">
+			  <a class="nav-link" href="/claims/claims/admin">Todas las reclamaciones</a>
+		  </li>
+	 	 {% endif %}
 	    </ul>
 	    <div class="form-inline my-2 my-lg-0">
 

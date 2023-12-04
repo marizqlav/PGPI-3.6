@@ -1,0 +1,11 @@
+{% extends 'claims/base_generic.html' %}
+
+{% block content %}
+  <h1>Eliminar reclamación</h1>
+  <p>¿Estas seguro de que quieres eliminar la reclamación:"{{ claim.title }}"?</p>
+  <form method="POST">
+    {% csrf_token %}
+    <input type="submit" value="Sí, eliminar">
+  </form>
+  <a href="{% url 'claim_detail' claim.id %}">No, volver</a>
+{% endblock %}

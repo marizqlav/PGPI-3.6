@@ -22,7 +22,7 @@
   
 
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-          <a class="navbar-brand" href="{% url 'catalog' %}">Grupo 3.6</a>
+          <a class="navbar-brand" href="{% url 'store' %}">Grupo 3.6</a>
           <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
           </button>
@@ -66,19 +66,19 @@
             </div>
             </li>
             {% if user.is_staff %}
-            <li class="nav-item">
-              <a class="nav-link" href="{% url 'guest_orders' %}">Todos los pedidos</a>
-            </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'guest_orders' %}">Todos los pedidos</a>
+              </li>
             {% endif %}
-            {% if user.is_authenticated and not user.is_staff%}
-            <li class="nav-item">
-            <a class="nav-link" href="/claims/claims">Reclamaciones <span class="sr-only"></span></a>
-            </li>
-            {% endif %}
-            {% if user.is_staff %}
-            <li class="nav-item">
-              <a class="nav-link" href="/claims/claims/admin">Todas las reclamaciones</a>
-            </li>
+              {% if user.is_authenticated and not user.is_staff%}
+              <li class="nav-item">
+              <a class="nav-link" href="/claims/claims">Reclamaciones <span class="sr-only"></span></a>
+              </li>
+              {% endif %}
+              {% if user.is_staff %}
+              <li class="nav-item">
+                <a class="nav-link" href="/claims/claims/admin">Todas las reclamaciones</a>
+              </li>
             {% endif %}
             </ul>
             <div class="form-inline my-2 my-lg-0">

@@ -1,0 +1,13 @@
+{% extends 'claims/base_generic.html' %}
+
+{% block content %}
+  <h1>Actualizar reclamación</h1>
+  <form method="POST">
+    {% csrf_token %}
+    <label for="title">Título:</label>
+    <input id="title" type="text" name="title" value="{{ claim.title }}" required>
+    <label for="description">Descripción:</label>
+    <textarea id="description" name="description" required>{{ claim.description }}</textarea>
+    <input type="submit" value="Actualizar reclamación">
+  </form>
+{% endblock %}

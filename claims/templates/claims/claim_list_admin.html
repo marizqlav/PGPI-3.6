@@ -1,0 +1,31 @@
+{% extends 'claims/base_generic.html' %}
+
+{% block content %}
+  <h1>Admin: List of Claims</h1>
+  <table>
+    <thead>
+      <tr>
+        <th>Title</th>
+        <th>Description</th>
+        <th>Status</th>
+        <th>Created at</th>
+        <th>Last updated at</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for claim in claims %}
+        <tr>
+          <td>{{ claim.title }}</td>
+          <td>{{ claim.description }}</td>
+          <td>{{ claim.status }}</td>
+          <td>{{ claim.created_at }}</td>
+          <td>{{ claim.updated_at }}</td>
+        </tr>
+      {% empty %}
+        <tr>
+          <td colspan="5">No claims found.</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}

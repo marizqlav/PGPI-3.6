@@ -1,0 +1,11 @@
+{% extends 'claims/base_generic.html' %}
+
+{% block content %}
+  <h1>{{ claim.title }}</h1>
+  <p>{{ claim.description }}</p>
+  <p>Estado: {{ claim.status }}</p>
+  <p>Fecha de creación: {{ claim.created_at }}</p>
+  <p>Última actualización: {{ claim.updated_at }}</p>
+  <a href="{% url 'claim_update' claim.id %}">Editar reclamación</a>
+  <a href="{% url 'claim_delete' claim.id %}">Eliminar reclamación</a>
+{% endblock %}
