@@ -79,7 +79,6 @@ class Order(models.Model):
 	complete = models.BooleanField(default=False)
 	transaction_id = models.CharField(max_length=100, null=True)
 	status = models.CharField(max_length=2, choices=STATUS_CHOICES, default='PL')
-	transaction_id = models.IntegerField(default=0, null=True, blank=True, help_text="Enter the transaction id number")
 	estimated_delivery_date = models.DateTimeField(null=True, blank=True)
 	refund_requested = models.BooleanField(default=False)
 	refund_granted = models.BooleanField(default=False)

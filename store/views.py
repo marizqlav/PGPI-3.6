@@ -126,32 +126,30 @@ def updateItem(request):
 	if orderItem.quantity <= 0:
 		orderItem.delete()
 
-	return JsonResponse('Item was added', safe=False)
+	return JsonResponse('El artículo fue añadido', safe=False)
 
 def processOrder(request):
-    transaction_id = datetime.datetime.now().timestamp()
     data = json.loads(request.body)
 
     if request.user.is_authenticated:
         customer = request.user.customer
-        order, created = Order.objects.get_or_create(customer=customer, complete=False)
+        order = Order.objects.filter(customer=customer, complete=False).order_by('-id').first()
     else:
         customer, order = guestOrder(request, data)
 
     total = float(data['form']['total'])
-    order.transaction_id = transaction_id
 
-    # Genera un número de seguimiento aleatorio que no esté en uso
+    if order is None and total > 0:
+        order = Order.objects.create(customer=customer, complete=False)
+
     while True:
-        tracking_number = get_random_string(length=32)
-        if not Order.objects.filter(tracking_number=tracking_number).exists():
+        transaction_id = get_random_string(length=32)
+        if not Order.objects.filter(transaction_id=transaction_id).exists():
             break
 
-    # Asigna el número de seguimiento al pedido
-    order.tracking_number = tracking_number
+    order.transaction_id = transaction_id
 
     order.estimated_delivery_date = timezone.now() + relativedelta(months=2)
-
 
     if total == order.get_cart_total:
         order.complete = True
@@ -167,7 +165,7 @@ def processOrder(request):
         zipcode=data['shipping']['zipcode'],
         )
 
-    return JsonResponse('Payment submitted..', safe=False)
+    return JsonResponse('Pago realizado..', safe=False)
 
 @login_required
 def track_order(request, order_id):
@@ -175,27 +173,42 @@ def track_order(request, order_id):
     if order.customer != request.user.customer and not request.user.is_staff:
         raise PermissionDenied
     context = {'order': order}
-    return render(request, 'track_order.html', context)
+    return render(request, 'store/track_order.html', context)
 
 @login_required
 def customer_orders(request, customer_id):
     customer = get_object_or_404(Customer, id=customer_id)
     if customer != request.user.customer and not request.user.is_staff:
         raise PermissionDenied
+
+    order_by = request.GET.get('order_by', 'id')
+    status = request.GET.get('status', '')
     registered_orders = customer.get_registered_orders()
 
+    if status:
+        registered_orders = registered_orders.filter(status=status)
+
+    if order_by == 'get_cart_total':
+        registered_orders = sorted(registered_orders, key=lambda order: order.get_cart_total)
+    else:
+        registered_orders = registered_orders.order_by(order_by)
+
+    paginator = Paginator(registered_orders, 10)  
+
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
     context = {
-        'registered_orders': registered_orders,
+        'page_obj': page_obj, 
     }
 
-    return render(request, 'customers_orders.html', context)
+    return render(request, 'store/customers_orders.html', context)
 
 @staff_member_required
 def guest_orders(request):
     order_by = request.GET.get('order_by', 'id')  
     status = request.GET.get('status', '') 
 
-    # Obtén todos los pedidos
     guest_orders = Order.objects.all()
 
     if status:
@@ -234,16 +247,13 @@ def enviar_correo(request):
         email = request.POST.get('email')
         asunto = request.POST.get('asunto')
         mensaje = request.POST.get('mensaje')
-        
-        # Aquí puedes agregar la lógica para enviar el correo
-        # Puedes utilizar la función send_mail de Django
-        
+                
         try:
             send_mail(
                 asunto,
                 f'Nombre: {nombre}\nEmail: {email}\nMensaje: {mensaje}',
-                'pgpitienda@gmail.com',  # Remitente del correo
-                ['pgpitienda@gmail.com'],  # Destinatario(s)
+                'pgpitienda@gmail.com', 
+                ['pgpitienda@gmail.com'],  
                 fail_silently=False,
             )
             return JsonResponse({'mensaje': 'Correo enviado correctamente'})

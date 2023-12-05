@@ -6,18 +6,19 @@
             <div class="box-element" id="form-wrapper">
                 <form id="form">
                     <div id="user-info">
+                        {% if user.is_anonymous %}
                         <div class="form-field">
                             <input required class="form-control" type="text" name="name" placeholder="Nombre..">
                         </div>
                         <div class="form-field">
                             <input required class="form-control" type="email" name="email" placeholder="Email..">
                         </div>
+                        {% endif %}
                     </div>
 
 					<div class="form-field">
 						<label for="delivery_option">Opciones de entrega:</label>
 						<select id="delivery_option" name="delivery_option">
-							<option value="">Selecciona un método de entrega</option>
 							<option value="store_pickup">Recoger en tienda</option>
 							<option value="home_delivery">A domicilio</option>
 						</select>
@@ -122,40 +123,66 @@
 	<script type="text/javascript">
 		var shipping = '{{order.shipping}}'
 		var user = '{{user}}'
-	
+
+
 		var deliveryOption = document.getElementById('delivery_option');
 		var shippingInfo = document.getElementById('shipping-info');
+		var shippingFields = shippingInfo.querySelectorAll('input');
+
+		// Oculta la información de envío al inicio
+		shippingInfo.style.display = 'none';
 
 		deliveryOption.addEventListener('change', function() {
 			if (this.value == 'home_delivery') {
 				shippingInfo.style.display = 'block';
+				shipping = true; // Cambia shipping a true si se selecciona la opción de entrega a domicilio
+
+				// Agrega el atributo 'required' a los campos de envío
+				shippingFields.forEach(function(field) {
+					field.required = true;
+				});
 			} else {
 				shippingInfo.style.display = 'none';
+				shipping = false; // Mantiene shipping como false si se selecciona la opción de recoger en tienda
+
+				// Elimina el atributo 'required' de los campos de envío
+				shippingFields.forEach(function(field) {
+					field.required = false;
+				});
 			}
 		});
-	
-		if (shipping == 'False'){
-		 	document.getElementById('shipping-info').innerHTML = ''
+		
+		if (shipping == 'True') {
+			document.getElementById('shipping-info').style.display = 'block';
+		} else {
+			document.getElementById('shipping-info').style.display = 'none';
 		}
-
-		if (user != 'AnonymousUser'){
-		 	document.getElementById('user-info').innerHTML = ''
-		 }
-
-		if (shipping == 'False' && user != 'AnonymousUser'){
-			//Hide entire form if user is logged in and shipping is false
-				document.getElementById('form-wrapper').classList.add("hidden");
-				//Show payment if logged in user wants to buy an item that does not require shipping
-			    document.getElementById('payment-info').classList.remove("hidden");
+	
+		function validateForm() {
+			// Si se seleccionó la entrega a domicilio, verifica que todos los campos de envío estén rellenos
+			if (deliveryOption.value == 'home_delivery') {
+				for (var i = 0; i < shippingFields.length; i++) {
+					if (shippingFields[i].value == '') {
+						alert('Por favor, rellene todos los campos de envío.');
+						return false;
+					}
+				}
+			}
+			return true;
 		}
 
 		var form = document.getElementById('form')
 		form.addEventListener('submit', function(e){
-	    	e.preventDefault()
-	    	console.log('Form Submitted...')
-	    	document.getElementById('form-button').classList.add("hidden");
-	    	document.getElementById('payment-info').classList.remove("hidden");
-	    })
+			if (!validateForm()) {
+				e.preventDefault();
+				return;
+			}
+
+			e.preventDefault()
+			console.log('Form Submitted...')
+			document.getElementById('form-button').classList.add("hidden");
+			document.getElementById('payment-info').classList.remove("hidden");
+		})
 
 		
 		document.getElementById('make-payment').addEventListener('click', function(e){
@@ -164,7 +191,7 @@
 			} else {
 				alert('El total debe ser mayor a 0 euros para poder realizar el pago');
 			}
-		}) 
+		})
 	    
 
 	    function submitFormData(){
@@ -198,27 +225,23 @@
 	    	console.log('Shipping Info:', shippingInfo)
 	    	console.log('User Info:', userFormData)
 
-	    	var url = "/process_order/"
-	    	fetch(url, {
-	    		method:'POST',
-	    		headers:{
-	    			'Content-Type':'applicaiton/json',
-	    			'X-CSRFToken':csrftoken,
-	    		}, 
-	    		body:JSON.stringify({'form':userFormData, 'shipping':shippingInfo}),
-	    		
-	    	})
-	    	.then((response) => response.json())
-	    	.then((data) => {
+			var url = "/store/process_order/";
+			fetch(url, {
+				method:'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'X-CSRFToken': csrftoken,
+				},
+				body:JSON.stringify({'form':userFormData, 'shipping':shippingInfo, 'home_delivery':shipping}),
+			})
+			.then((response) => response.json())
+			.then((data) => {
 				console.log('Success:', data);
 				alert('Transaction completed');  
-
 				cart = {}
 				document.cookie ='cart=' + JSON.stringify(cart) + ";domain=;path=/"
-
 				window.location.href = "{% url 'store' %}"
-
-				})
+			})
 	    }
 	</script>
 {% endblock content %}
