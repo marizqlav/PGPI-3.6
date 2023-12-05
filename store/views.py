@@ -11,6 +11,8 @@ from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from django.core.exceptions import PermissionDenied
+from django.core.mail import send_mail
+from django.http import JsonResponse
 
 def store(request):
     data = cartData(request)
@@ -215,3 +217,37 @@ def guest_orders(request):
     }
 
     return render(request, 'store/guest_orders.html', context)
+
+def terms_of_use(request):
+    data = cartData(request)
+    cartItems = data['cartItems']
+    return render(request, 'store/terms_of_use.html',{'cartItems':cartItems})
+
+def contact(request):
+    data = cartData(request)
+    cartItems = data['cartItems']
+    return render(request, 'store/contact.html',{'cartItems':cartItems})
+
+def enviar_correo(request):
+    if request.method == 'POST':
+        nombre = request.POST.get('nombre')
+        email = request.POST.get('email')
+        asunto = request.POST.get('asunto')
+        mensaje = request.POST.get('mensaje')
+        
+        # Aquí puedes agregar la lógica para enviar el correo
+        # Puedes utilizar la función send_mail de Django
+        
+        try:
+            send_mail(
+                asunto,
+                f'Nombre: {nombre}\nEmail: {email}\nMensaje: {mensaje}',
+                'pgpitienda@gmail.com',  # Remitente del correo
+                ['pgpitienda@gmail.com'],  # Destinatario(s)
+                fail_silently=False,
+            )
+            return JsonResponse({'mensaje': 'Correo enviado correctamente'})
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+    else:
+        return JsonResponse({}, status=405)

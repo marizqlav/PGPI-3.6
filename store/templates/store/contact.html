@@ -1,0 +1,93 @@
+{% extends 'store/main.html' %}
+{% load static %}
+
+{% block content %}
+<div class="contact">
+  <div class="container">
+    <h2 class="text-center mb-4"><strong>CONTACTA CON NOSOTROS</strong></h2>
+    
+    <section id="quienesSomos">
+      <h3><strong>¿Quiénes Somos?</strong></h3>
+      <p>Somos una empresa especializada en el montaje de bicicletas con sede en Sevilla. Nos estamos expandiendo a toda España a través de internet. Encuéntranos en nuestra sede o contáctanos para más información.</p>
+      <div class="row">
+        <div class="col-md-6">
+          <!-- Insertar mapa de Google -->
+          <!-- Puedes usar el iframe de Google Maps -->
+          <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3171.336740595912!2d-5.989684024285602!3d37.35820827209336!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xd126dd4a3055555%3A0x29c3f634f8a021b8!2sEscuela%20T%C3%A9cnica%20Superior%20de%20Ingenier%C3%ADa%20Inform%C3%A1tica!5e0!3m2!1ses!2ses!4v1701797410263!5m2!1ses!2ses"  width="100%" height="300" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>        </div>
+        <div class="col-md-6">
+          <!-- Dirección -->
+          <address>
+            <strong>Nuestra Sede</strong><br>
+            Dirección: Av. de la Reina Mercedes, s/n,<br>
+            Ciudad: Sevilla<br>
+            Código Postal: 41012<br>
+          </address>
+        </div>
+      </div>
+    </section>
+    
+    <hr>
+   
+    <section id="formularioContacto">
+      <h3><strong>Contáctanos</strong></h3>
+      <form id="contactForm" method="post">
+          {% csrf_token %}
+          <div class="row">
+              <div class="col-md-6">
+                  <div class="form-group">
+                      <label for="nombre">Nombre</label>
+                      <input type="text" class="form-control" id="nombre" name="nombre" placeholder="Tu Nombre">
+                  </div>
+                  <div class="form-group">
+                      <label for="email">Email</label>
+                      <input type="email" class="form-control" id="email" name="email" placeholder="tucorreo@example.com">
+                  </div>
+              </div>
+              <div class="col-md-6">
+                  <div class="form-group">
+                      <label for="asunto">Asunto</label>
+                      <input type="text" class="form-control" id="asunto" name="asunto" placeholder="Asunto">
+                  </div>
+                  <div class="form-group">
+                      <label for="mensaje">Mensaje</label>
+                      <textarea class="form-control" id="mensaje" name="mensaje" rows="5" placeholder="Tu mensaje"></textarea>
+                  </div>
+              </div>
+          </div>
+          <button type="submit" class="btn btn-dark">Enviar Mensaje</button>
+      </form>
+  </section>
+  </div>
+</div>
+<br>
+<br>
+<a class="btn btn-dark" href="/store/catalog/">Volver</a>
+
+<script>
+
+document.addEventListener('DOMContentLoaded', function () {
+    const form = document.querySelector('#formularioContacto form');
+    form.addEventListener('submit', function (event) {
+        event.preventDefault();
+        
+        const formData = new FormData(form);
+
+        fetch('enviar_correo/', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => {
+            if (response.ok) {
+                alert('Correo enviado correctamente');
+                form.reset();
+            } else {
+                throw new Error('Error al enviar el correo');
+            }
+        })
+        .catch(error => {
+            alert(error.message);
+        });
+    });
+});
+</script>
+{% endblock %}

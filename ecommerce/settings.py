@@ -40,6 +40,7 @@ INSTALLED_APPS = [
 
     'store.apps.StoreConfig',
     'users.apps.UserConfig',
+    'claims.apps.ClaimsConfig',
 ]
 
 MIDDLEWARE = [
@@ -130,7 +131,8 @@ MEDIA_URL = '/images/'
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'static/images')
 
-LOGIN_REDIRECT_URL = '/users/profile/'
+LOGIN_REDIRECT_URL = '/store/catalog/'
+LOGIN_URL = 'login_error'
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'

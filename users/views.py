@@ -4,7 +4,7 @@ from django.contrib.auth.views import LoginView, PasswordResetView, PasswordChan
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
 from django.views import View
-
+from store.utils import cookieCart, cartData, guestOrder
 from store.models import Customer
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
@@ -14,7 +14,10 @@ from .forms import RegisterForm, LoginForm, UpdateUserForm, UpdateProfileForm
 from users.models import Profile
 
 def home(request):
-    return render(request, 'users/home.html')
+    data = cartData(request)
+    cartItems = data['cartItems']
+    context = {'cartItems':cartItems}
+    return render(request, 'users/home.html',context)
 
 
 class RegisterView(View):
@@ -31,12 +34,17 @@ class RegisterView(View):
         return super(RegisterView, self).dispatch(request, *args, **kwargs)
 
     def get(self, request, *args, **kwargs):
+        data = cartData(request)
+        cartItems = data['cartItems']
+        
         form = self.form_class(initial=self.initial)
-        return render(request, self.template_name, {'form': form})
+        context = {'form': form,'cartItems':cartItems}
+        return render(request, self.template_name, context)
 
     def post(self, request, *args, **kwargs):
         form = self.form_class(request.POST)
-
+        data = cartData(request)
+        cartItems = data['cartItems']
         if form.is_valid():
             user = form.save()
 
@@ -51,13 +59,19 @@ class RegisterView(View):
             messages.success(request, f'Cuenta creada para {username}')
 
             return redirect(to='login')
-
-        return render(request, self.template_name, {'form': form})
+        context = {'form': form,'cartItems':cartItems}
+        return render(request, self.template_name, context)
 
 
 # Class based view that extends from the built in login view to add a remember me functionality
 class CustomLoginView(LoginView):
     form_class = LoginForm
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        data = cartData(self.request)
+        context['cartItems'] = data['cartItems']
+        return context
 
     def form_valid(self, form):
         remember_me = form.cleaned_data.get('remember_me')
@@ -83,6 +97,11 @@ class ResetPasswordView(SuccessMessageMixin, PasswordResetView):
                       "por favor, asegurate de que era el mismo que usaste para tu registro y comprueba tu carpeta de spam."
     success_url = reverse_lazy('users-home')
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        data = cartData(self.request)
+        context['cartItems'] = data['cartItems']
+        return context
 
 class ChangePasswordView(SuccessMessageMixin, PasswordChangeView):
     template_name = 'users/change_password.html'
@@ -92,6 +111,8 @@ class ChangePasswordView(SuccessMessageMixin, PasswordChangeView):
 
 @login_required
 def profile(request):
+    data = cartData(request)
+    cartItems = data['cartItems']
     if request.method == 'POST':
         user_form = UpdateUserForm(request.POST, instance=request.user)
         profile_form = UpdateProfileForm(request.POST, request.FILES, instance=request.user.profile)
@@ -105,13 +126,15 @@ def profile(request):
         user_form = UpdateUserForm(instance=request.user)
         profile_form = UpdateProfileForm(instance=request.user.profile)
 
-    return render(request, 'users/profile.html', {'user_form': user_form, 'profile_form': profile_form})
+    return render(request, 'users/profile.html', {'user_form': user_form, 'profile_form': profile_form,'cartItems':cartItems})
 
 @login_required
 def admin_users(request):
+    data = cartData(request)
+    cartItems = data['cartItems']
     if request.user.is_superuser:
 
-        return render(request, 'users/admin.html', {'users': Profile.objects.all()})
+        return render(request, 'users/admin.html', {'users': Profile.objects.all(),'cartItems':cartItems})
     else:
         return HttpResponse("Permiso denegado")
 
@@ -125,4 +148,9 @@ def user_delete(request, username):
         return HttpResponse("Usuario borrado")
     else:
         return HttpResponse("Permiso denegado")
+    
+def login_error(request):
+    data = cartData(request)
+    cartItems = data['cartItems']
+    return render(request, 'users/login_error.html',{'cartItems':cartItems})
 
