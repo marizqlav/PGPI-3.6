@@ -1,0 +1,7 @@
+{% extends 'claims/base_generic.html' %}
+
+{% block content %}
+  <h1>Error</h1>
+  <p>Solo el usuario que ha puesto la reclamación o un administrador pueden acceder.</p>
+  <a class="btn btn-dark" href="{% url 'claim_list' %}">Volver a lista de reclamaciones</a>
+{% endblock %}

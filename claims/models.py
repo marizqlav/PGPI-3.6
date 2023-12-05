@@ -13,6 +13,7 @@ class Claim(models.Model):
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Pendiente')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    admin_feedback = models.TextField(null=True, blank=True)
 
     def __str__(self):
         return self.title

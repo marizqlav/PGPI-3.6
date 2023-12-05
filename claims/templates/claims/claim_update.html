@@ -1,13 +1,48 @@
 {% extends 'claims/base_generic.html' %}
 
 {% block content %}
-  <h1>Actualizar reclamación</h1>
-  <form method="POST">
-    {% csrf_token %}
-    <label for="title">Título:</label>
-    <input id="title" type="text" name="title" value="{{ claim.title }}" required>
-    <label for="description">Descripción:</label>
-    <textarea id="description" name="description" required>{{ claim.description }}</textarea>
-    <input type="submit" value="Actualizar reclamación">
-  </form>
+<link rel="stylesheet" type="text/css" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css">
+  {% if request.user == claim.user %}
+    <h1>Actualizar reclamación</h1>
+    <form method="POST">
+      {% csrf_token %}
+      <label for="title">Título:</label>
+      <input class="form-control requiredField Highlighted-label" id="title" type="text" name="title" value="{{ claim.title }}" required>
+      <br>
+      <label for="description">Descripción:</label>
+      <textarea class="form-control requiredField Highlighted-label" id="description" name="description" required>{{ claim.description }}</textarea>
+      <br>
+      <input  class="btn btn-dark" type="submit" value="Actualizar reclamación">
+      <a class="btn btn-dark" href="/claims/claims/{{ claim.id }}">Cancelar</a>
+    </form>
+    {% endif %}
+    {% if request.user.is_staff %}
+    <h1>Contestar reclamación</h1>
+
+    <form method="POST">
+      {% csrf_token %}
+      <label for="title">Título:</label>
+      <input class="form-control requiredField Highlighted-label" id="title" type="text" name="title" value="{{ claim.title }}" readonly>
+      <br>
+      <label for="description">Descripción:</label>
+      <textarea class="form-control requiredField Highlighted-label" id="description" name="description" readonly>{{ claim.description }}</textarea>
+      <br>
+      <label for="status">Estado:</label>
+      <select class="form-control" id="status" name="status">
+        <option value="Pendiente" {% if claim.status == 'Pendiente' %}selected{% endif %}>Pendiente</option>
+        <option value="En progreso" {% if claim.status == 'En progreso' %}selected{% endif %}>En progreso</option>
+        <option value="Cerrada" {% if claim.status == 'Cerrada' %}selected{% endif %}>Cerrada</option>
+      </select>
+      <br>
+      <label for="admin_feedback">Comentario del administrador:</label>
+      <textarea class="form-control requiredField Highlighted-label" id="admin_feedback" name="admin_feedback">{{ claim.admin_feedback }}</textarea>
+      <br>
+      <input class="btn btn-dark" type="submit" value="Actualizar reclamación">
+      <a class="btn btn-dark" href="/claims/claims/{{ claim.id }}">Cancelar</a>
+    </form>
+
+
+
+
+    {% endif %}
 {% endblock %}

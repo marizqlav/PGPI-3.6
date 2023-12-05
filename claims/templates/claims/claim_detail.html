@@ -1,11 +1,42 @@
 {% extends 'claims/base_generic.html' %}
 
 {% block content %}
-  <h1>{{ claim.title }}</h1>
-  <p>{{ claim.description }}</p>
-  <p>Estado: {{ claim.status }}</p>
-  <p>Fecha de creación: {{ claim.created_at }}</p>
-  <p>Última actualización: {{ claim.updated_at }}</p>
-  <a href="{% url 'claim_update' claim.id %}">Editar reclamación</a>
-  <a href="{% url 'claim_delete' claim.id %}">Eliminar reclamación</a>
+<div class="container">
+  <div class="row">
+    <div class="col-md-8 offset-md-2">
+      <h1 class="display-4 text-center mb-4">{{ claim.title }}</h1>
+      <p class="lead">{{ claim.description }}</p>
+      <hr>
+      {% if claim.status == "Pendiente" %}
+        <p><strong>Estado:</strong> <span class="badge bg-warning">{{ claim.status }}</span></p>
+      {% elif claim.status == "En progreso" %}
+        <p><strong>Estado:</strong> <span class="badge bg-info">{{ claim.status }}</span></p>
+      {% elif claim.status == "Cerrada" %}
+        <p><strong>Estado:</strong> <span class="badge bg-success">{{ claim.status }}</span></p>
+      {% endif %}
+      <p><strong>Fecha de creación:</strong> {{ claim.created_at }}</p>
+      <p><strong>Última actualización:</strong> {{ claim.updated_at }}</p>
+      {% if claim.admin_feedback %}
+        <div class="alert alert-info" role="alert">
+          <strong>Feedback del administrador:</strong> {{ claim.admin_feedback }}
+        </div>
+      {% endif %}
+      <hr>
+      <div class="text-center">
+        
+        {% if request.user.is_staff %}
+          <a class="btn btn-dark" href="/claims/claims/admin/">Volver</a>
+        {%else%}
+          <a class="btn btn-dark" href="/claims/claims/">Volver</a>
+        {% endif %}
+        {% if request.user.is_staff %}
+        <a href="{% url 'claim_update' claim.id %}" class="btn btn-dark">Contestar reclamación</a>
+        {%else%}
+        <a href="{% url 'claim_update' claim.id %}" class="btn btn-dark">Editar reclamación</a>
+        {% endif %}
+        <a href="{% url 'claim_delete' claim.id %}" class="btn btn-dark">Eliminar reclamación</a>
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock %}

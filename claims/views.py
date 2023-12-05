@@ -29,6 +29,8 @@ def claim_detail(request, claim_id):
     claim = get_object_or_404(Claim, id=claim_id)
     data = cartData(request)
     cartItems = data['cartItems']
+    if claim.user != request.user and not request.user.is_staff:
+        return render(request, 'claims/claim_detail_error.html',{'cartItems':cartItems})
     return render(request, 'claims/claim_detail.html', {'claim': claim,'cartItems':cartItems})
 
 @login_required
@@ -55,9 +57,14 @@ def claim_update(request, claim_id):
     data = cartData(request)
     cartItems = data['cartItems']
     claim = get_object_or_404(Claim, id=claim_id)
+    if claim.user != request.user and not request.user.is_staff:
+        return render(request, 'claims/claim_detail_error.html',{'cartItems':cartItems})
     if request.method == 'POST':
         claim.title = request.POST['title']
         claim.description = request.POST['description']
+        if request.user.is_staff:
+            claim.status = request.POST['status']
+            claim.admin_feedback = request.POST['admin_feedback']
         claim.save()
         return HttpResponseRedirect(reverse('claim_detail', args=(claim.id,)))
     return render(request, 'claims/claim_update.html', {'claim': claim,'cartItems':cartItems})
@@ -67,7 +74,12 @@ def claim_delete(request, claim_id):
     data = cartData(request)
     cartItems = data['cartItems']
     claim = get_object_or_404(Claim, id=claim_id)
+    if claim.user != request.user and not request.user.is_staff:
+        return render(request, 'claims/claim_detail_error.html',{'cartItems':cartItems})
     if request.method == 'POST':
         claim.delete()
-        return HttpResponseRedirect(reverse('claim_list'))
+        if request.user.is_staff:
+            return HttpResponseRedirect(reverse('claim_list_admin'))
+        else:
+            return HttpResponseRedirect(reverse('claim_list'))
     return render(request, 'claims/claim_delete.html', {'claim': claim,'cartItems':cartItems})
