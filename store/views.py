@@ -91,7 +91,15 @@ def cart(request):
 	order = data['order']
 	items = data['items']
 
-	context = {'items':items, 'order':order, 'cartItems':cartItems}
+	# Conjunto de tipos de productos
+	product_types = set(data['types'])
+
+    # Verifica si hay al menos un artículo de cada tipo en el carrito
+	has_all_types = product_types == set([product_type[0] for product_type in PRODUCT_TYPES])
+	missing_types = set([product_type[0] for product_type in PRODUCT_TYPES]) - product_types
+
+	#context = {'items':items, 'order':order, 'cartItems':cartItems}
+	context = {'items':items, 'product_types': product_types, 'order':order, 'cartItems':cartItems, 'has_all_types': has_all_types, 'missing_types': missing_types}
 	return render(request, 'store/cart.html', context)
 
 def checkout(request):
