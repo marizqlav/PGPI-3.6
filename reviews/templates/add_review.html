@@ -1,0 +1,87 @@
+{% extends 'base_generic.html' %}
+{% block content %}
+  <div class="container mt-5">
+    <h1>Añadir Opinión</h1>
+
+    <form method="POST" onsubmit="return validateForm()">
+      {% csrf_token %}
+      <div class="form-group">
+        <label for="title">Título:</label>
+        <input type="text" class="form-control" id="title" name="title" required>
+      </div>
+      <div class="form-group">
+        <label for="content">Opinión:</label>
+        <textarea class="form-control" id="content" name="content" rows="4" required></textarea>
+      </div>
+      <div class="form-group">
+        <label for="rating">Puntuación:</label>
+        <div class="rating">
+          <i class="far fa-star" data-rating="1"></i>
+          <i class="far fa-star" data-rating="2"></i>
+          <i class="far fa-star" data-rating="3"></i>
+          <i class="far fa-star" data-rating="4"></i>
+          <i class="far fa-star" data-rating="5"></i>
+          <input type="hidden" name="rating" id="rating" value="0">
+        </div>
+      </div>
+      <button id="submitButton" class="btn btn-primary btn-lg" type="submit" disabled>Guardar cambios</button>
+    </form>
+
+    <div class="mt-3">
+      <a class="btn btn-secondary btn-lg mr-2" href="{% url 'review_list' %}">Cancelar</a>
+    </div>
+  </div>
+
+  <script>
+    function validateForm() {
+      const title = document.getElementById('title').value;
+      const content = document.getElementById('content').value;
+      const rating = document.getElementById('rating').value;
+
+      if (title.trim() === '' || content.trim() === '' || rating === '0') {
+        alert('Por favor, complete todos los campos y seleccione una puntuación.');
+        return false;
+      }
+      return true;
+    }
+
+    const stars = document.querySelectorAll('.rating i');
+    const submitButton = document.getElementById('submitButton');
+
+    stars.forEach(star => {
+      star.addEventListener('mouseover', function() {
+        let rating = this.dataset.rating;
+        stars.forEach(s => {
+          if (s.dataset.rating <= rating) {
+            s.classList.add('fas', 'text-warning');
+            s.classList.remove('far');
+          } else {
+            s.classList.add('far');
+            s.classList.remove('fas', 'text-warning');
+          }
+        });
+      });
+
+      star.addEventListener('click', function() {
+        let rating = this.dataset.rating;
+        document.getElementById('rating').value = rating;
+
+        // Habilitar el botón una vez se ha seleccionado una puntuación
+        submitButton.removeAttribute('disabled');
+      });
+
+      star.addEventListener('mouseout', function() {
+        let rating = document.getElementById('rating').value;
+        stars.forEach(s => {
+          if (s.dataset.rating <= rating) {
+            s.classList.add('fas', 'text-warning');
+            s.classList.remove('far');
+          } else {
+            s.classList.add('far');
+            s.classList.remove('fas', 'text-warning');
+          }
+        });
+      });
+    });
+  </script>
+{% endblock %}
