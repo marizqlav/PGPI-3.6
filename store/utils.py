@@ -44,19 +44,23 @@ def cookieCart(request):
 	return {'cartItems':cartItems ,'order':order, 'items':items, 'types':types}
 
 def cartData(request):
-	if request.user.is_authenticated:
-		customer = request.user.customer
-		order, created = Order.objects.get_or_create(customer=customer, complete=False)
-		items = order.orderitem_set.all()
-		cartItems = order.get_cart_items
-	else:
-		cookieData = cookieCart(request)
-		cartItems = cookieData['cartItems']
-		order = cookieData['order']
-		items = cookieData['items']
-		types = cookieData['types']
+    types = []  # Initialize types
+    if request.user.is_authenticated:
+        customer = request.user.customer
+        order, created = Order.objects.get_or_create(customer=customer, complete=False)
+        items = order.orderitem_set.all()
+        cartItems = order.get_cart_items
+        # Populate types for authenticated users
+        for item in items:
+            types.append(item.product.type)
+    else:
+        cookieData = cookieCart(request)
+        cartItems = cookieData['cartItems']
+        order = cookieData['order']
+        items = cookieData['items']
+        types = cookieData['types']
 
-	return {'cartItems':cartItems ,'order':order, 'items':items, 'types':types}
+    return {'cartItems':cartItems ,'order':order, 'items':items, 'types':types}
 
 	
 def guestOrder(request, data):
