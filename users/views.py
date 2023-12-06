@@ -8,7 +8,7 @@ from store.utils import cookieCart, cartData, guestOrder
 from store.models import Customer
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
-
+from django.contrib.auth import logout
 from .forms import RegisterForm, LoginForm, UpdateUserForm, UpdateProfileForm
 
 from users.models import Profile
@@ -108,6 +108,11 @@ class ChangePasswordView(SuccessMessageMixin, PasswordChangeView):
     success_message = "Se ha actualizado tu contraseña correctamente"
     success_url = reverse_lazy('users-home')
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        data = cartData(self.request)
+        context['cartItems'] = data['cartItems']
+        return context
 
 @login_required
 def profile(request):
@@ -153,4 +158,12 @@ def login_error(request):
     data = cartData(request)
     cartItems = data['cartItems']
     return render(request, 'users/login_error.html',{'cartItems':cartItems})
+
+def logout_view(request):
+    data = cartData(request)
+    cartItems = data['cartItems']
+    logout(request)
+    return render(request,'users/logout.html',{'cartItems':cartItems}) 
+
+
 

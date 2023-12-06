@@ -7,7 +7,7 @@ from django.conf.urls.static import static
 
 from .views import home, profile, RegisterView
 from django.contrib.auth import views as auth_views
-from users.views import CustomLoginView, ResetPasswordView, ChangePasswordView, admin_users, user_delete
+from users.views import CustomLoginView, ResetPasswordView, ChangePasswordView, admin_users, user_delete,logout_view
 
 from users.forms import LoginForm
 
@@ -20,7 +20,7 @@ urlpatterns = [
     path('login/', CustomLoginView.as_view(redirect_authenticated_user=True, template_name='users/login.html',
                                            authentication_form=LoginForm), name='login'),
 
-    path('logout/', auth_views.LogoutView.as_view(template_name='users/logout.html'), name='logout'),
+    path('logout/', logout_view, name='logout'),
 
     path('password-reset/', ResetPasswordView.as_view(), name='password_reset'),
 
