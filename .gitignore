@@ -11,4 +11,3 @@ venv/
 .idea/
 env/
 *.pyc
-db.sqlite3
