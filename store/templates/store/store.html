@@ -59,11 +59,7 @@
                     {% if product.stock_no == 0 %}
                         <strong>SIN STOCK&nbsp;&nbsp;&nbsp;</strong>
                     {% else %}
-                        {% if product.stock_no > cartItems %}
-                            <button data-product="{{product.id}}" data-action="add" data-url="{% url 'update_item' %}" class="btn btn-outline-secondary add-btn update-cart">Añadir al carrito</button>
-                        {% else %}
-                            <strong>SIN STOCK&nbsp;&nbsp;&nbsp;</strong>
-                        {% endif %}
+                        <button data-product="{{product.id}}" data-action="add" data-url="{% url 'update_item' %}" class="btn btn-outline-secondary add-btn update-cart">Añadir al carrito</button>
                     {% endif %}
                     <a class="btn btn-outline-success" href="/store/product/{{product.id}}">Ver</a>       
                     <h4 style="display: inline-block; float: right"><strong>{{product.price|floatformat:2}}€</strong></h4>

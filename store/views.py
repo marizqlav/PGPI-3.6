@@ -104,30 +104,38 @@ def checkout(request):
 	return render(request, 'store/checkout.html', context)
 
 def updateItem(request):
-	data = json.loads(request.body)
-	productId = data['productId']
-	action = data['action']
-	print('Action:', action)
-	print('Product:', productId)
+    data = json.loads(request.body)
+    productId = data['productId']
+    action = data['action']
+    print('Action:', action)
+    print('Product:', productId)
 
-	customer = request.user.customer
-	product = Product.objects.get(id=productId)
-	order, created = Order.objects.get_or_create(customer=customer, complete=False)
+    customer = request.user.customer
+    product = Product.objects.get(id=productId)
+    order, created = Order.objects.get_or_create(customer=customer, complete=False)
 
-	orderItem, created = OrderItem.objects.get_or_create(order=order, product=product)
+    orderItem, created = OrderItem.objects.get_or_create(order=order, product=product)
 
-	if action == 'add':
-		orderItem.quantity = (orderItem.quantity + 1)
-	elif action == 'remove':
-		orderItem.quantity = (orderItem.quantity - 1)
-
-	orderItem.save()
-
-	if orderItem.quantity <= 0:
-		orderItem.delete()
+    if action == 'add':
+        orderItem.quantity = (orderItem.quantity + 1)
+        product.stock_no = (product.stock_no - 1)
+        
+    elif action == 'remove':
+        orderItem.quantity = (orderItem.quantity - 1)
+        product.stock_no = (product.stock_no + 1)
     
+    elif action == 'clear':
+        product.stock_no = (product.stock_no + orderItem.quantity)
+        orderItem.quantity = 0
+        
 
-	return JsonResponse('El artículo fue añadido', safe=False)
+    orderItem.save()
+    product.save()
+
+    if orderItem.quantity <= 0:
+        orderItem.delete()
+
+    return JsonResponse('El artículo fue añadido', safe=False)
 
 def processOrder(request):
     data = json.loads(request.body)
@@ -138,7 +146,7 @@ def processOrder(request):
     else:
         customer, order = guestOrder(request, data)
 
-    total = float(data['form']['total'])
+    total = float(data['form']['total'].replace(',', '.'))
 
     if order is None and total > 0:
         order = Order.objects.create(customer=customer, complete=False)
