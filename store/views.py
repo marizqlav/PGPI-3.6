@@ -1,5 +1,6 @@
 from django.shortcuts import render, get_object_or_404
 from django.http import JsonResponse
+
 import json
 import datetime
 from .models import * 
@@ -261,3 +262,30 @@ def enviar_correo(request):
             return JsonResponse({'error': str(e)}, status=500)
     else:
         return JsonResponse({}, status=405)
+    
+def product_detail(request, product_id):
+    data = cartData(request)
+    cartItems = data['cartItems']
+    product = get_object_or_404(Product, id=product_id)
+    return render(request, 'store/product_detail.html', {'product': product,'cartItems':cartItems})
+
+from django.shortcuts import render,redirect,get_object_or_404
+from .models import Product
+from .forms import ProductForm
+
+def edit_product(request, product_id):
+    data = cartData(request)
+    cartItems = data['cartItems']
+    product = get_object_or_404(Product, pk=product_id)
+    if not request.user.is_staff:
+        return render(request, 'store/permission_denied.html', {'cartItems':cartItems})
+    if request.method == 'POST':
+        form = ProductForm(request.POST, request.FILES, instance=product)
+        if form.is_valid():
+            form.save()
+            # Redireccionar a la página del producto o a donde desees
+            return redirect('product_detail', product_id=product.id)
+    else:
+        form = ProductForm(instance=product)
+    
+    return render(request, 'store/edit_product.html', {'product': product, 'form': form,'cartItems':cartItems})
