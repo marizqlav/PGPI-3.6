@@ -19,8 +19,6 @@ for (i = 0; i < updateBtns.length; i++) {
 function updateUserOrder(productId, action, url){
 	console.log('User is authenticated, sending data...')
 
-		
-
 		fetch(url, {
 			method:'POST',
 			headers:{
@@ -57,8 +55,35 @@ function addCookieItem(productId, action){
 			delete cart[productId];
 		}
 	}
+
+	if (action == 'clear'){
+
+			delete cart[productId];
+		
+	}
 	console.log('CART:', cart)
 	document.cookie ='cart=' + JSON.stringify(cart) + ";domain=;path=/"
 	
 	location.reload()
+}
+
+function removeAllQuantity(productId) {
+    console.log('Removing all quantity for product:', productId);
+
+    if (user === 'AnonymousUser') {
+        removeCookieQuantity(productId);
+    } else {
+        updateUserOrder(productId, 'remove', updateUrl);
+    }
+}
+
+function removeCookieQuantity(productId) {
+    console.log('User is not authenticated. Removing quantity from cookie...');
+
+    if (cart[productId] !== undefined) {
+        delete cart[productId];
+        console.log('All quantity removed for product:', productId);
+        document.cookie = 'cart=' + JSON.stringify(cart) + ';domain=;path=/';
+        location.reload();
+    }
 }

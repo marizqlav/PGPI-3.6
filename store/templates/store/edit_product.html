@@ -1,0 +1,31 @@
+{% extends 'store/main.html' %}
+
+{% block content %}
+{% if user.is_staff %}
+<div class="container mt-5">
+  <div class="row">
+    <div class="col-md-6">
+      <h1>{{ product.name }}</h1>
+      <img src="{{ product.imageURL }}" alt="{{ product.name }}" class="img-fluid mb-3">
+      <p>{{ product.description }}</p>
+    </div>
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-body">
+          <h2 class="card-title">Editar Detalles del Producto</h2>
+          <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-primary mt-3">Guardar Cambios</button>
+          </form>
+          <a class="btn btn-dark mt-2" href="/store/product/{{product.id}}">Volver al producto</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+{% endif %}
+{% endblock %}

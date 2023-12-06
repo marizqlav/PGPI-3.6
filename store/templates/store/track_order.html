@@ -1,17 +1,16 @@
 {% extends 'store/main.html' %}
 {% load static %}
 {% block content %}
-    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
     <div class="container mt-5">
         <div class="card">
             <div class="card-header">
-                <h1 class="text-center">Track Order</h1>
+                <h1 class="text-center">Seguimiento de Pedido</h1>
             </div>
             <div class="card-body">
-                <h5 class="card-title">Order ID: {{ order.id }}</h5>
-                <p class="card-text">Status: {{ order.get_status_display }}</p>
-                <p class="card-text">Tracking Number: {{ order.tracking_number }}</p>
-                <p class="card-text">Estimated Delivery Date: {{ order.estimated_delivery_date }}</p>
+                <h5 class="card-title">ID PEDIDO: {{ order.id }}</h5>
+                <p class="card-text">Estado: {{ order.get_status_display }}</p>
+                <p class="card-text">Número de Seguimiento: {{ order.transaction_id }}</p>
+                <p class="card-text">Fecha Aproximada de Entrega: {{ order.estimated_delivery_date }}</p>
             </div>
         </div>
     </div>

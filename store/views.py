@@ -1,8 +1,9 @@
 from django.shortcuts import render, get_object_or_404
 from django.http import JsonResponse
+
 import json
 import datetime
-from .models import * 
+from .models import *
 from .utils import cookieCart, cartData, guestOrder
 from django.utils.crypto import get_random_string
 from django.utils import timezone
@@ -95,7 +96,6 @@ def cart(request):
 
 def checkout(request):
 	data = cartData(request)
-	
 	cartItems = data['cartItems']
 	order = data['order']
 	items = data['items']
@@ -104,54 +104,61 @@ def checkout(request):
 	return render(request, 'store/checkout.html', context)
 
 def updateItem(request):
-	data = json.loads(request.body)
-	productId = data['productId']
-	action = data['action']
-	print('Action:', action)
-	print('Product:', productId)
+    data = json.loads(request.body)
+    productId = data['productId']
+    action = data['action']
+    print('Action:', action)
+    print('Product:', productId)
 
-	customer = request.user.customer
-	product = Product.objects.get(id=productId)
-	order, created = Order.objects.get_or_create(customer=customer, complete=False)
+    customer = request.user.customer
+    product = Product.objects.get(id=productId)
+    order, created = Order.objects.get_or_create(customer=customer, complete=False)
 
-	orderItem, created = OrderItem.objects.get_or_create(order=order, product=product)
+    orderItem, created = OrderItem.objects.get_or_create(order=order, product=product)
 
-	if action == 'add':
-		orderItem.quantity = (orderItem.quantity + 1)
-	elif action == 'remove':
-		orderItem.quantity = (orderItem.quantity - 1)
+    if action == 'add':
+        orderItem.quantity = (orderItem.quantity + 1)
+        product.stock_no = (product.stock_no - 1)
+        
+    elif action == 'remove':
+        orderItem.quantity = (orderItem.quantity - 1)
+        product.stock_no = (product.stock_no + 1)
+    
+    elif action == 'clear':
+        product.stock_no = (product.stock_no + orderItem.quantity)
+        orderItem.quantity = 0
+        
 
-	orderItem.save()
+    orderItem.save()
+    product.save()
 
-	if orderItem.quantity <= 0:
-		orderItem.delete()
+    if orderItem.quantity <= 0:
+        orderItem.delete()
 
-	return JsonResponse('Item was added', safe=False)
+    return JsonResponse('El artículo fue añadido', safe=False)
 
 def processOrder(request):
-    transaction_id = datetime.datetime.now().timestamp()
     data = json.loads(request.body)
 
     if request.user.is_authenticated:
         customer = request.user.customer
-        order, created = Order.objects.get_or_create(customer=customer, complete=False)
+        order = Order.objects.filter(customer=customer, complete=False).order_by('-id').first()
     else:
         customer, order = guestOrder(request, data)
 
-    total = float(data['form']['total'])
-    order.transaction_id = transaction_id
+    total = float(data['form']['total'].replace(',', '.'))
 
-    # Genera un número de seguimiento aleatorio que no esté en uso
+    if order is None and total > 0:
+        order = Order.objects.create(customer=customer, complete=False)
+
     while True:
-        tracking_number = get_random_string(length=32)
-        if not Order.objects.filter(tracking_number=tracking_number).exists():
+        transaction_id = get_random_string(length=32)
+        if not Order.objects.filter(transaction_id=transaction_id).exists():
             break
 
-    # Asigna el número de seguimiento al pedido
-    order.tracking_number = tracking_number
+    order.transaction_id = transaction_id
 
     order.estimated_delivery_date = timezone.now() + relativedelta(months=2)
-
 
     if total == order.get_cart_total:
         order.complete = True
@@ -159,43 +166,72 @@ def processOrder(request):
 
     if order.shipping == True:
         ShippingAddress.objects.create(
-        customer=customer,
-        order=order,
-        address=data['shipping']['address'],
-        city=data['shipping']['city'],
-        state=data['shipping']['state'],
-        zipcode=data['shipping']['zipcode'],
+            customer=customer,
+            order=order,
+            address=data['shipping']['address'],
+            city=data['shipping']['city'],
+            state=data['shipping']['state'],
+            zipcode=data['shipping']['zipcode'],
         )
 
-    return JsonResponse('Payment submitted..', safe=False)
+    # Actualizar el stock si el usuario no está autenticado
+    if not request.user.is_authenticated:
+        for item in order.orderitem_set.all():
+            product = item.product
+            product.stock_no -= item.quantity
+            product.save()
+
+    return JsonResponse('Pago realizado..', safe=False)
 
 @login_required
 def track_order(request, order_id):
+    data = cartData(request)
+    cartItems = data['cartItems']
     order = get_object_or_404(Order, id=order_id)
     if order.customer != request.user.customer and not request.user.is_staff:
         raise PermissionDenied
-    context = {'order': order}
-    return render(request, 'track_order.html', context)
+    context = {'order': order,'cartItems':cartItems}
+    return render(request, 'store/track_order.html', context)
 
 @login_required
 def customer_orders(request, customer_id):
+    data = cartData(request)
+    cartItems = data['cartItems']
     customer = get_object_or_404(Customer, id=customer_id)
     if customer != request.user.customer and not request.user.is_staff:
         raise PermissionDenied
+
+    order_by = request.GET.get('order_by', 'id')
+    status = request.GET.get('status', '')
     registered_orders = customer.get_registered_orders()
 
+    if status:
+        registered_orders = registered_orders.filter(status=status)
+
+    if order_by == 'get_cart_total':
+        registered_orders = sorted(registered_orders, key=lambda order: order.get_cart_total)
+    else:
+        registered_orders = registered_orders.order_by(order_by)
+
+    paginator = Paginator(registered_orders, 10)  
+
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
     context = {
-        'registered_orders': registered_orders,
+        'page_obj': page_obj,
+        'cartItems':cartItems,
     }
 
-    return render(request, 'customers_orders.html', context)
+    return render(request, 'store/customers_orders.html', context)
 
 @staff_member_required
 def guest_orders(request):
+    data = cartData(request)
+    cartItems = data['cartItems']
     order_by = request.GET.get('order_by', 'id')  
     status = request.GET.get('status', '') 
 
-    # Obtén todos los pedidos
     guest_orders = Order.objects.all()
 
     if status:
@@ -214,6 +250,7 @@ def guest_orders(request):
 
     context = {
         'page_obj': page_obj,
+        'cartItems':cartItems,
     }
 
     return render(request, 'store/guest_orders.html', context)
@@ -234,16 +271,13 @@ def enviar_correo(request):
         email = request.POST.get('email')
         asunto = request.POST.get('asunto')
         mensaje = request.POST.get('mensaje')
-        
-        # Aquí puedes agregar la lógica para enviar el correo
-        # Puedes utilizar la función send_mail de Django
-        
+                
         try:
             send_mail(
                 asunto,
                 f'Nombre: {nombre}\nEmail: {email}\nMensaje: {mensaje}',
-                'pgpitienda@gmail.com',  # Remitente del correo
-                ['pgpitienda@gmail.com'],  # Destinatario(s)
+                'pgpitienda@gmail.com', 
+                ['pgpitienda@gmail.com'],  
                 fail_silently=False,
             )
             return JsonResponse({'mensaje': 'Correo enviado correctamente'})
@@ -251,3 +285,30 @@ def enviar_correo(request):
             return JsonResponse({'error': str(e)}, status=500)
     else:
         return JsonResponse({}, status=405)
+    
+def product_detail(request, product_id):
+    data = cartData(request)
+    cartItems = data['cartItems']
+    product = get_object_or_404(Product, id=product_id)
+    return render(request, 'store/product_detail.html', {'product': product,'cartItems':cartItems})
+
+from django.shortcuts import render,redirect,get_object_or_404
+from .models import Product
+from .forms import ProductForm
+
+def edit_product(request, product_id):
+    data = cartData(request)
+    cartItems = data['cartItems']
+    product = get_object_or_404(Product, pk=product_id)
+    if not request.user.is_staff:
+        return render(request, 'store/permission_denied.html', {'cartItems':cartItems})
+    if request.method == 'POST':
+        form = ProductForm(request.POST, request.FILES, instance=product)
+        if form.is_valid():
+            form.save()
+            # Redireccionar a la página del producto o a donde desees
+            return redirect('product_detail', product_id=product.id)
+    else:
+        form = ProductForm(instance=product)
+    
+    return render(request, 'store/edit_product.html', {'product': product, 'form': form,'cartItems':cartItems})
