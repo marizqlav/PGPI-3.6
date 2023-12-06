@@ -166,13 +166,20 @@ def processOrder(request):
 
     if order.shipping == True:
         ShippingAddress.objects.create(
-        customer=customer,
-        order=order,
-        address=data['shipping']['address'],
-        city=data['shipping']['city'],
-        state=data['shipping']['state'],
-        zipcode=data['shipping']['zipcode'],
+            customer=customer,
+            order=order,
+            address=data['shipping']['address'],
+            city=data['shipping']['city'],
+            state=data['shipping']['state'],
+            zipcode=data['shipping']['zipcode'],
         )
+
+    # Actualizar el stock si el usuario no está autenticado
+    if not request.user.is_authenticated:
+        for item in order.orderitem_set.all():
+            product = item.product
+            product.stock_no -= item.quantity
+            product.save()
 
     return JsonResponse('Pago realizado..', safe=False)
 
