@@ -1,6 +1,15 @@
-<h1>Add Review</h1>
-<form method="post">
-  {% csrf_token %}
-  {{ form.as_p }}
-  <button type="submit">Submit Review</button>
-</form>
+<!DOCTYPE html>
+<html>
+  {%include 'header.html'%}
+<body>
+  {%include 'navbar.html'%}
+  <h1>Add Review</h1>
+    <form method="post">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button type="submit">Submit Review</button>
+    </form>
+</body>
+
+{%include 'footer.html'%}
+</html>

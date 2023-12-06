@@ -1,13 +1,24 @@
-<h1>Opinions</h1>
-<ul>
-  {% for review in reviews %}
-    <li>
-      <h3>{{ review.title }}</h3>
-      <p>{{ review.content }}</p>
-      <p>Posted by: {{ review.user.username }}</p>
-      <p>Posted at: {{ review.created_at }}</p>
-    </li>
-  {% empty %}
-    <li>No reviews yet.</li>
-  {% endfor %}
-</ul>
+<!DOCTYPE html>
+<html>
+  {%include 'header.html'%}
+<body>
+  {%include 'navbar.html'%}
+  <h1>Opiniones</h1>
+  <a href="{% url 'add_review' %}">Añadir opinión</a>
+
+  <ul>
+    {% for review in reviews %}
+      <li>
+        <h3>{{ review.title }}</h3>
+        <p>{{ review.content }}</p>
+        <p>Posted by: {{ review.user.username }}</p>
+        <p>Posted at: {{ review.created_at }}</p>
+      </li>
+    {% empty %}
+      <li>No reviews yet.</li>
+    {% endfor %}
+  </ul>
+</body>
+
+{%include 'footer.html'%}
+</html>
