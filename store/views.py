@@ -3,7 +3,7 @@ from django.http import JsonResponse
 
 import json
 import datetime
-from .models import * 
+from .models import *
 from .utils import cookieCart, cartData, guestOrder
 from django.utils.crypto import get_random_string
 from django.utils import timezone
@@ -96,7 +96,6 @@ def cart(request):
 
 def checkout(request):
 	data = cartData(request)
-	
 	cartItems = data['cartItems']
 	order = data['order']
 	items = data['items']
@@ -126,6 +125,7 @@ def updateItem(request):
 
 	if orderItem.quantity <= 0:
 		orderItem.delete()
+    
 
 	return JsonResponse('El artículo fue añadido', safe=False)
 
@@ -170,14 +170,18 @@ def processOrder(request):
 
 @login_required
 def track_order(request, order_id):
+    data = cartData(request)
+    cartItems = data['cartItems']
     order = get_object_or_404(Order, id=order_id)
     if order.customer != request.user.customer and not request.user.is_staff:
         raise PermissionDenied
-    context = {'order': order}
+    context = {'order': order,'cartItems':cartItems}
     return render(request, 'store/track_order.html', context)
 
 @login_required
 def customer_orders(request, customer_id):
+    data = cartData(request)
+    cartItems = data['cartItems']
     customer = get_object_or_404(Customer, id=customer_id)
     if customer != request.user.customer and not request.user.is_staff:
         raise PermissionDenied
@@ -200,13 +204,16 @@ def customer_orders(request, customer_id):
     page_obj = paginator.get_page(page_number)
 
     context = {
-        'page_obj': page_obj, 
+        'page_obj': page_obj,
+        'cartItems':cartItems,
     }
 
     return render(request, 'store/customers_orders.html', context)
 
 @staff_member_required
 def guest_orders(request):
+    data = cartData(request)
+    cartItems = data['cartItems']
     order_by = request.GET.get('order_by', 'id')  
     status = request.GET.get('status', '') 
 
@@ -228,6 +235,7 @@ def guest_orders(request):
 
     context = {
         'page_obj': page_obj,
+        'cartItems':cartItems,
     }
 
     return render(request, 'store/guest_orders.html', context)

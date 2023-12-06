@@ -13,7 +13,7 @@
         <div class="card-body">
           <h2 class="card-title">Detalles del Producto</h2>
           <ul class="list-group list-group-flush">
-            <li class="list-group-item"><strong>Precio:</strong> {{ product.price }}€</li>
+            <li class="list-group-item"><strong>Precio:</strong> {{ product.price|floatformat:2}}€</li>
             <li class="list-group-item"><strong>Tipo:</strong> {{ product.get_type_display }}</li>
             <li class="list-group-item"><strong>Fabricante:</strong> {{ product.get_maker_display }}</li>
             <li class="list-group-item"><strong>En stock:</strong> {{ product.stock_no }}</li>
