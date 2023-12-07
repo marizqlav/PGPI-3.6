@@ -149,8 +149,6 @@ def updateItem(request):
 
     return JsonResponse('El artículo fue añadido', safe=False)
 
-import stripe
-from django.views.decorators.csrf import csrf_exempt
 
 @csrf_exempt
 def create_checkout_session(request):
