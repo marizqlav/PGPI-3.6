@@ -137,6 +137,46 @@ def updateItem(request):
 
     return JsonResponse('El artículo fue añadido', safe=False)
 
+import stripe
+from django.views.decorators.csrf import csrf_exempt
+
+@csrf_exempt
+def create_checkout_session(request):
+    if request.method == 'POST':
+        domain_url = 'http://localhost:8000/store/'
+        stripe.api_key = 'sk_test_51OKWXoL9mkc6WFFaDpedWlNfgDBTtJUTd8mgHNKgUjsXQtxe5pH3M6aPlSynfnvNYXI10zqFfpUFRx1pPgOKkTRe00vVq27WZq'
+        try:
+            data = json.loads(request.body)
+            
+            price = stripe.Price.create(
+                currency="eur",
+                unit_amount=int(float(data['form']['total'].replace(',', '.')) * 100),
+                product_data={"name": "Test"},
+            )
+
+            checkout_session = stripe.checkout.Session.create(
+                success_url=domain_url + 'payment-success/',
+                cancel_url=domain_url + 'payment-cancelled/',
+                payment_method_types=['card'],
+                mode='payment',
+                line_items=[{
+                    # Provide the exact Price ID (e.g. pr_1234) of the product you want to sell
+                    'price': price['id'],
+                    'quantity': 1
+                }]
+
+            )
+            return JsonResponse({'sessionId': checkout_session['id']})
+        except Exception as e:
+            return JsonResponse({'error': str(e)})
+
+def payment_sucess(request):
+    return render(request, 'store/payment-sucess.html')
+
+def payment_cancelled(request):
+    return render(request, 'store/payment-cancelled.html')
+
+
 def processOrder(request):
     data = json.loads(request.body)
 

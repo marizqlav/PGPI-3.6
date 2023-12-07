@@ -52,7 +52,11 @@
 
 			<br>
 			<div class="box-element hidden" id="payment-info">
-				<small>Opciones de Paypal</small>
+				<small>Opciones de pago</small>
+				<select id="payment-ops">
+					<option selected="selected" value="Contra rembolso">Contra rembolso</option>
+					<option value="Pagar ahora">Pagar ahora</option>
+				</select>
 				<button id="make-payment">Hacer pago</button>
 				<div id="paypal-button-container"></div>
 			</div>
@@ -225,23 +229,49 @@
 	    	console.log('Shipping Info:', shippingInfo)
 	    	console.log('User Info:', userFormData)
 
-			var url = "/store/process_order/";
-			fetch(url, {
-				method:'POST',
-				headers: {
-					'Content-Type': 'application/json',
-					'X-CSRFToken': csrftoken,
-				},
-				body:JSON.stringify({'form':userFormData, 'shipping':shippingInfo, 'home_delivery':shipping}),
-			})
-			.then((response) => response.json())
-			.then((data) => {
-				console.log('Success:', data);
-				alert('Transaction completed');  
-				cart = {}
-				document.cookie ='cart=' + JSON.stringify(cart) + ";domain=;path=/"
-				window.location.href = "{% url 'store' %}"
-			})
+			var payment_opt = document.getElementById("payment-ops").value;
+
+			if (payment_opt == "Pagar ahora") {
+				const stripe = Stripe('pk_test_51OKWXoL9mkc6WFFaCankXngEQfCat01rywoceCcT46S8YB1in3EdoLdz8dDpHU2r5UplgjCAlzyF8JQjgqnfIbP300o6zFaNOd');
+
+				fetch("/store/create-checkout-session/", {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+						'X-CSRFToken': csrftoken,
+					},
+					body:JSON.stringify({'form':userFormData, 'shipping':shippingInfo, 'home_delivery':shipping}),
+				})
+				.then((result) => { return result.json(); })
+				.then((session) => {
+					console.log(session);
+
+					return stripe.redirectToCheckout({sessionId: session.sessionId})
+				})
+				.then((res) => {
+					console.log(res);
+				});
+			} else {
+	
+				var url = "/store/process_order/";
+				fetch(url, {
+					method:'POST',
+					headers: {
+						'Content-Type': 'application/json',
+						'X-CSRFToken': csrftoken,
+					},
+					body:JSON.stringify({'form':userFormData, 'shipping':shippingInfo, 'home_delivery':shipping}),
+				})
+				.then((response) => response.json())
+				.then((data) => {
+					console.log('Success:', data);
+					alert('Transaction completed');  
+					cart = {}
+					document.cookie ='cart=' + JSON.stringify(cart) + ";domain=;path=/"
+					window.location.href = "{% url 'store' %}"
+				})
+			}
 	    }
 	</script>
+	<script src="https://js.stripe.com/v3/"></script>
 {% endblock content %}

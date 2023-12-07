@@ -20,7 +20,9 @@ urlpatterns = [
     path('product/<int:product_id>/', views.product_detail, name='product_detail'),
     path('product/<int:product_id>/edit/', views.edit_product, name='edit_product'),
 
-
+    path('create-checkout-session/', views.create_checkout_session),
+    path('payment-success/', views.payment_sucess),
+    path('payment-cancelled/', views.payment_cancelled),
 
 
 
