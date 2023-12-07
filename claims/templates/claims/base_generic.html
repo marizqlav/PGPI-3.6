@@ -21,89 +21,108 @@
 <body>
   
 
-        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-          <a class="navbar-brand" href="{% url 'catalog' %}">BicicletasMondongo</a>
-          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-          </button>
-      
-          <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav mr-auto">
-              <li class="nav-item active">
-                <a class="nav-link" href="{% url 'catalog' %}">Catálogo <span class="sr-only">(current)</span></a>
-              </li>
-            <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              Productos
-            </a>
-            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-              <a class="dropdown-item" href="/store/?product_type=Cuadro">Cuadros</a>
-              <a class="dropdown-item" href="/store/?product_type=Manillar">Manillares</a>
-              <a class="dropdown-item" href="/store/?product_type=Sillin">Sillines</a>
-              <a class="dropdown-item" href="/store/?product_type=Camara">Cámaras</a>
-              <a class="dropdown-item" href="/store/?product_type=Rueda">Ruedas</a>
-              <a class="dropdown-item" href="/store/?product_type=Freno">Frenos</a>
-              <a class="dropdown-item" href="/store/?product_type=Pedal">Pedales</a>
-              <a class="dropdown-item" href="/store/?product_type=Cambios">Cambios</a>
-            </div>
-            </li>
-            <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              Fabricantes
-            </a>
-            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-              <a class="dropdown-item" href="/store/?maker=Berria">Berria</a>
-              <a class="dropdown-item" href="/store/?maker=BH">BH</a>
-              <a class="dropdown-item" href="/store/?maker=CBK">CBK</a>
-              <a class="dropdown-item" href="/store/?maker=Goka">Goka</a>
-              <a class="dropdown-item" href="/store/?maker=Massi">Massi</a>
-              <a class="dropdown-item" href="/store/?maker=Megamo">Megamo</a>
-              <a class="dropdown-item" href="/store/?maker=MMR+">MMR</a>
-              <a class="dropdown-item" href="/store/?maker=Monty">Monty</a>
-              <a class="dropdown-item" href="/store/?maker=MSC">MSC</a>
-              <a class="dropdown-item" href="/store/?maker=Orbea">Orbea</a>
-              <a class="dropdown-item" href="/store/?maker=Vitoria">Vitoria</a>
-              <a class="dropdown-item" href="/store/?maker=Unno">Unno</a>
-            </div>
-            </li>
-            {% if user.is_staff %}
-              <li class="nav-item">
-                <a class="nav-link" href="{% url 'guest_orders' %}">Todos los pedidos</a>
-              </li>
-            {% endif %}
-              <li class="nav-item">
-                <a class="nav-link" href="/reviews/reviews">Opiniones <span class="sr-only"></span></a>
-              </li>
-              {% if user.is_authenticated and not user.is_staff%}
-            <li class="nav-item">
-            <a class="nav-link" href="/claims/claims">Reclamaciones <span class="sr-only"></span></a>
-            </li>
-            {% endif %}
-              {% if user.is_staff %}
-              <li class="nav-item">
-                <a class="nav-link" href="/claims/claims/admin">Todas las reclamaciones</a>
-              </li>
-              {% endif %}
-            </ul>
-            <div class="form-inline my-2 my-lg-0">
-              <div class="collapse navbar-collapse" id="navbarCollapse">
-                <div class="navbar-nav ml-auto">
-                  {% if user.is_authenticated %}
-                    <a href="{% url 'users-profile' %}" class="nav-item nav-link">Mi perfil</a>
-                    <a href="{% url 'logout' %}" class="nav-item nav-link">Cerrar sesión</a>
-                  {% else %}
-                    <a href="{% url 'login' %}" class="nav-item nav-link">Iniciar sesión</a>
-                  {% endif %}
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+	  <a class="navbar-brand" href="{% url 'catalog' %}">BicicletasMondongo</a>
+	  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+	    <span class="navbar-toggler-icon"></span>
+	  </button>
 
-                </div>
-            </div>
-            <a href="{% url 'cart' %}">
-              <img  id="cart-icon" src="{% static 'images/cart.png' %}">
-            </a>
-            <p id="cart-total">{{cartItems}}</p>
-            </div>
-          </div>
-        </nav>
+	  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+	    <ul class="navbar-nav mr-auto">
+	      <li class="nav-item active">
+	        <a class="nav-link" href="{% url 'catalog' %}">Catálogo <span class="sr-only">(current)</span></a>
+	      </li>
+		  <li class="nav-item dropdown">
+			<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+				Productos
+			</a>
+			<div class="dropdown-menu" aria-labelledby="navbarDropdown">
+				<a class="dropdown-item" href="/store/?product_type=Cuadro">Cuadros</a>
+				<a class="dropdown-item" href="/store/?product_type=Manillar">Manillares</a>
+				<a class="dropdown-item" href="/store/?product_type=Sillin">Sillines</a>
+				<a class="dropdown-item" href="/store/?product_type=Camara">Cámaras</a>
+				<a class="dropdown-item" href="/store/?product_type=Rueda">Ruedas</a>
+				<a class="dropdown-item" href="/store/?product_type=Freno">Frenos</a>
+				<a class="dropdown-item" href="/store/?product_type=Pedal">Pedales</a>
+				<a class="dropdown-item" href="/store/?product_type=Cambios">Cambios</a>
+			</div>
+		  </li>
+		  <li class="nav-item dropdown">
+			<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+				Fabricantes
+			</a>
+			<div class="dropdown-menu" aria-labelledby="navbarDropdown">
+				<a class="dropdown-item" href="/store/?maker=Berria">Berria</a>
+				<a class="dropdown-item" href="/store/?maker=BH">BH</a>
+				<a class="dropdown-item" href="/store/?maker=CBK">CBK</a>
+				<a class="dropdown-item" href="/store/?maker=Goka">Goka</a>
+				<a class="dropdown-item" href="/store/?maker=Massi">Massi</a>
+				<a class="dropdown-item" href="/store/?maker=Megamo">Megamo</a>
+				<a class="dropdown-item" href="/store/?maker=MMR+">MMR</a>
+				<a class="dropdown-item" href="/store/?maker=Monty">Monty</a>
+				<a class="dropdown-item" href="/store/?maker=MSC">MSC</a>
+				<a class="dropdown-item" href="/store/?maker=Orbea">Orbea</a>
+				<a class="dropdown-item" href="/store/?maker=Vitoria">Vitoria</a>
+				<a class="dropdown-item" href="/store/?maker=Unno">Unno</a>
+			</div>
+		  </li>
+		  {% if user.is_staff %}
+		  <li class="nav-item">
+			  <a class="nav-link" href="{% url 'guest_orders' %}">Todos los pedidos</a>
+		  </li>
+	 	 {% endif %}
+		  <li class="nav-item">
+	        <a class="nav-link" href="/reviews/reviews/">Opiniones <span class="sr-only"></span></a>
+	      </li>
+		 {% if user.is_authenticated and not user.is_staff%}
+		  <li class="nav-item">
+			<a class="nav-link" href="{% url 'customer_orders' user.customer.id %}">Mis pedidos</a>
+		  </li>
+		 {% endif %}
+
+		  {% if user.is_authenticated and not user.is_staff%}
+		  <li class="nav-item">
+			<a class="nav-link" href="/claims/claims">Reclamaciones <span class="sr-only"></span></a>
+		  </li>
+		  {% endif %}
+		  {% if user.is_staff %}
+		  <li class="nav-item">
+			  <a class="nav-link" href="/claims/claims/admin">Todas las reclamaciones</a>
+		  </li>
+	 	 {% endif %}
+		  {% if user.is_staff %}
+		  <li class="nav-item">
+			  <a class="nav-link" href="/users/admin">Gestionar usuarios</a>
+		  </li>
+	 	 {% endif %}
+	    </ul>
+		
+	    <div class="form-inline my-2 my-lg-0">
+			<div class="form-inline my-2 my-lg-0">
+				<div class="collapse navbar-collapse" id="navbarCollapse">
+				  <div class="navbar-nav ml-auto">
+					{% if user.is_staff %}
+					<a href="/admin/" class="nav-item nav-link">ADMINISTRADOR</a>
+					{% endif %}
+					{% if user.is_authenticated %}
+					  <a href="{% url 'users-profile' %}" class="nav-item nav-link">Mi perfil</a>
+					  <a href="{% url 'logout' %}" class="nav-item nav-link">Cerrar sesión</a>
+					{% else %}
+					  <a href="{% url 'login' %}" class="nav-item nav-link">Iniciar sesión</a>
+					{% endif %}
+  
+				  </div>
+			  </div>
+
+	     	
+	     	<a href="{% url 'cart' %}">
+	    		<img  id="cart-icon" src="{% static 'images/cart.png' %}">
+	    	</a>
+	    	<p id="cart-total">{{cartItems}}</p>
+
+	    </div>
+	  </div>
+	</nav>
         <div class="container p-3 my-3">
           <div class="row">
             <div class="col-md-12">
