@@ -163,7 +163,7 @@ def create_checkout_session(request):
             )
 
             checkout_session = stripe.checkout.Session.create(
-                success_url=domain_url + 'payment-success/',
+                success_url=domain_url + 'payment-success?session_id={CHECKOUT_SESSION_ID}',
                 cancel_url=domain_url + 'payment-cancelled/',
                 payment_method_types=['card'],
                 mode='payment',
@@ -172,13 +172,24 @@ def create_checkout_session(request):
                     'price': price['id'],
                     'quantity': 1
                 }]
-
             )
+            global last_session_request
+            last_session_request = request
             return JsonResponse({'sessionId': checkout_session['id']})
         except Exception as e:
             return JsonResponse({'error': str(e)})
 
+last_session_id = None
+last_session_request = None
+
 def payment_sucess(request):
+    global last_session_id
+    global last_session_request
+    if request.GET['session_id'] == last_session_id:
+        return
+    last_session_id = request.GET['session_id']
+    processOrder(last_session_request)
+
     return render(request, 'store/payment-sucess.html')
 
 def payment_cancelled(request):
