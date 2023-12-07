@@ -4,11 +4,11 @@ from django.contrib.auth.models import User
 # Create your models here.
 
 STATUS_CHOICES = [
-        ('PL', 'Placed'),
-        ('PR', 'Processing'),
-        ('SH', 'Shipped'),
-        ('DE', 'Delivered'),
-    ]
+        ('EA', 'En Almacen'),
+        ('P', 'Procesando'),
+        ('EC', 'En Camino'),
+        ('E', 'Entregado'),
+]
 PRODUCT_TYPES = [
     ('Cuadro', 'Cuadro'),
     ('Manillar', 'Manillar'),
@@ -78,7 +78,7 @@ class Order(models.Model):
 	date_ordered = models.DateTimeField(auto_now_add=True)
 	complete = models.BooleanField(default=False)
 	transaction_id = models.CharField(max_length=100, null=True)
-	status = models.CharField(max_length=2, choices=STATUS_CHOICES, default='PL')
+	status = models.CharField(max_length=2, choices=STATUS_CHOICES, default='EA')
 	estimated_delivery_date = models.DateTimeField(null=True, blank=True)
 	refund_requested = models.BooleanField(default=False)
 	refund_granted = models.BooleanField(default=False)
@@ -113,7 +113,7 @@ class OrderItem(models.Model):
 	order = models.ForeignKey(Order, on_delete=models.SET_NULL, null=True)
 	quantity = models.IntegerField(default=0, null=True, blank=True)
 	date_added = models.DateTimeField(auto_now_add=True)
-	status = models.CharField(max_length=2, choices=STATUS_CHOICES, default='PL')
+	status = models.CharField(max_length=2, choices=STATUS_CHOICES, default='EA')
 	
 	@property
 	def get_total(self):

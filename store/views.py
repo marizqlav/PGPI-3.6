@@ -1,4 +1,4 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.http import JsonResponse
 
 import json
@@ -15,6 +15,10 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.core.exceptions import PermissionDenied
 from django.core.mail import send_mail
 from django.http import JsonResponse
+from .models import Product
+from .forms import ProductForm
+import stripe
+from django.views.decorators.csrf import csrf_exempt
 
 def store(request):
     data = cartData(request)
@@ -146,8 +150,6 @@ def updateItem(request):
 
     return JsonResponse('El artículo fue añadido', safe=False)
 
-import stripe
-from django.views.decorators.csrf import csrf_exempt
 
 @csrf_exempt
 def create_checkout_session(request):
@@ -317,7 +319,7 @@ def customer_orders(request, customer_id):
     if customer != request.user.customer and not request.user.is_staff:
         raise PermissionDenied
 
-    order_by = request.GET.get('order_by', 'id')
+    order_by = request.GET.get('order_by', 'id') or 'id'
     status = request.GET.get('status', '')
     registered_orders = customer.get_registered_orders()
 
@@ -345,8 +347,8 @@ def customer_orders(request, customer_id):
 def guest_orders(request):
     data = cartData(request)
     cartItems = data['cartItems']
-    order_by = request.GET.get('order_by', 'id')  
     status = request.GET.get('status', '') 
+    order_by = request.GET.get('order_by', 'id') or 'id'
 
     guest_orders = Order.objects.all()
 
@@ -408,10 +410,6 @@ def product_detail(request, product_id):
     product = get_object_or_404(Product, id=product_id)
     return render(request, 'store/product_detail.html', {'product': product,'cartItems':cartItems})
 
-from django.shortcuts import render,redirect,get_object_or_404
-from .models import Product
-from .forms import ProductForm
-
 def edit_product(request, product_id):
     data = cartData(request)
     cartItems = data['cartItems']
@@ -422,12 +420,21 @@ def edit_product(request, product_id):
         form = ProductForm(request.POST, request.FILES, instance=product)
         if form.is_valid():
             form.save()
-            # Redireccionar a la página del producto o a donde desees
             return redirect('product_detail', product_id=product.id)
     else:
         form = ProductForm(instance=product)
     
     return render(request, 'store/edit_product.html', {'product': product, 'form': form,'cartItems':cartItems})
+
+
+def update_order(request, order_id):
+    order = get_object_or_404(Order, id=order_id)
+    if request.method == 'POST':
+        status = request.POST.get('status')
+        order.status = status
+        order.save()
+        return redirect('guest_orders')
+    return redirect('guest_orders')
 
 def delete_product(request, product_id):
     if not request.user.is_staff:
@@ -453,3 +460,4 @@ def add_product(request):
     else:
         form = ProductForm()
     return render(request, 'store/add_product.html', {'form': form})
+
