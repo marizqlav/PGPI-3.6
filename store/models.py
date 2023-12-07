@@ -4,11 +4,11 @@ from django.contrib.auth.models import User
 # Create your models here.
 
 STATUS_CHOICES = [
-        ('PL', 'Placed'),
-        ('PR', 'Processing'),
-        ('SH', 'Shipped'),
-        ('DE', 'Delivered'),
-    ]
+        ('EA', 'En Almacen'),
+        ('P', 'Procesando'),
+        ('EC', 'En Camino'),
+        ('E', 'Entregado'),
+]
 PRODUCT_TYPES = [
     ('Cuadro', 'Cuadro'),
     ('Manillar', 'Manillar'),

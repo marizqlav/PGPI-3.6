@@ -371,3 +371,13 @@ def edit_product(request, product_id):
         form = ProductForm(instance=product)
     
     return render(request, 'store/edit_product.html', {'product': product, 'form': form,'cartItems':cartItems})
+
+
+def update_order(request, order_id):
+    order = get_object_or_404(Order, id=order_id)
+    if request.method == 'POST':
+        status = request.POST.get('status')
+        order.status = status
+        order.save()
+        return redirect('guest_orders')
+    return redirect('guest_orders')
