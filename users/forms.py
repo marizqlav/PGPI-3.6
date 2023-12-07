@@ -73,10 +73,20 @@ class UpdateUserForm(forms.ModelForm):
                                widget=forms.TextInput(attrs={'class': 'form-control'}))
     email = forms.EmailField(required=True,
                              widget=forms.TextInput(attrs={'class': 'form-control'}))
+    first_name = forms.CharField(max_length=100,
+                                 required=True,
+                                 widget=forms.TextInput(attrs={'placeholder': 'Nombre',
+                                                               'class': 'form-control',
+                                                               }))
+    last_name = forms.CharField(max_length=100,
+                                required=True,
+                                widget=forms.TextInput(attrs={'placeholder': 'Apellidos',
+                                                              'class': 'form-control',
+                                                              }))
 
     class Meta:
         model = User
-        fields = ['username', 'email']
+        fields = ['username', 'email', 'first_name', 'last_name']
 
 
 class UpdateProfileForm(forms.ModelForm):
@@ -86,3 +96,51 @@ class UpdateProfileForm(forms.ModelForm):
     class Meta:
         model = Profile
         fields = ['avatar', 'bio']
+
+from django import forms
+from .models import Profile
+
+class ProfileForm(forms.ModelForm):
+    class Meta:
+        model = Profile
+        fields = ['avatar', 'bio']
+
+
+class CustomUserCreationForm(UserCreationForm):
+    first_name = forms.CharField(max_length=100,
+                                 required=True,
+                                 widget=forms.TextInput(attrs={'placeholder': 'Nombre',
+                                                               'class': 'form-control',
+                                                               }))
+    last_name = forms.CharField(max_length=100,
+                                required=True,
+                                widget=forms.TextInput(attrs={'placeholder': 'Apellidos',
+                                                              'class': 'form-control',
+                                                              }))
+    username = forms.CharField(max_length=100,
+                               required=True,
+                               widget=forms.TextInput(attrs={'placeholder': 'Usuario',
+                                                             'class': 'form-control',
+                                                             }))
+    email = forms.EmailField(required=True,
+                             widget=forms.TextInput(attrs={'placeholder': 'Email',
+                                                           'class': 'form-control',
+                                                           }))
+    password1 = forms.CharField(max_length=50,
+                                required=True,
+                                widget=forms.PasswordInput(attrs={'placeholder': 'Contraseña',
+                                                                  'class': 'form-control',
+                                                                  'data-toggle': 'password',
+                                                                  'id': 'password',
+                                                                  }))
+    password2 = forms.CharField(max_length=50,
+                                required=True,
+                                widget=forms.PasswordInput(attrs={'placeholder': 'Confirmar contraseña',
+                                                                  'class': 'form-control',
+                                                                  'data-toggle': 'password',
+                                                                  'id': 'password',
+                                                                  }))
+
+    class Meta(UserCreationForm.Meta):
+        model = User
+        fields = ['first_name', 'last_name', 'username', 'email', 'password1', 'password2']

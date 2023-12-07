@@ -6,6 +6,7 @@ import datetime
 from .models import *
 from .utils import cookieCart, cartData, guestOrder
 from django.utils.crypto import get_random_string
+from django.contrib import messages
 from django.utils import timezone
 from dateutil.relativedelta import relativedelta
 from django.core.paginator import Paginator
@@ -371,3 +372,28 @@ def edit_product(request, product_id):
         form = ProductForm(instance=product)
     
     return render(request, 'store/edit_product.html', {'product': product, 'form': form,'cartItems':cartItems})
+
+def delete_product(request, product_id):
+    if not request.user.is_staff:
+        return render(request, 'store/permission_denied.html')  # Asegúrate de tener una plantilla para la denegación de permiso
+
+    product = get_object_or_404(Product, pk=product_id)
+
+    if request.method == 'POST':
+        product.delete()
+        messages.success(request, 'El producto se eliminó exitosamente.')
+        return redirect('catalog')  # Redirecciona a la página principal de la tienda o a donde sea adecuado
+
+    return render(request, 'store/delete_product.html', {'product': product})
+
+@staff_member_required
+def add_product(request):
+    if request.method == 'POST':
+        form = ProductForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Producto agregado exitosamente.')
+            return redirect('catalog')  # Redirige a donde desees luego de agregar el producto
+    else:
+        form = ProductForm()
+    return render(request, 'store/add_product.html', {'form': form})

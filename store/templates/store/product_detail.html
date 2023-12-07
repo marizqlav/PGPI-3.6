@@ -11,6 +11,14 @@
           <p class="out-of-stock-label">AGOTADO</p>
         {% endif %}
       </div>
+      <div>
+        {% if user.is_staff %}
+          <div class="btn-group" role="group">
+            <a href="edit/" class="btn btn-dark btn-icon mb-2"><i class="fas fa-edit"></i> Editar</a>
+            <a href="{% url 'delete_product' product.id %}" class="btn btn-danger btn-icon mb-2"><i class="fas fa-trash-alt"></i> Eliminar</a>
+          </div>
+        {% endif %}
+      </div>
       <p>{{ product.description }}</p>
     </div>
     <div class="col-md-6">
@@ -27,9 +35,6 @@
             {% if product.stock_no > 0 %}
             <button data-product="{{product.id}}" data-action="add" data-url="{% url 'update_item' %}" class="btn btn-outline-secondary add-btn update-cart">Añadir al carrito</button>
             {% endif %}
-            {% if user.is_staff %}
-            <a class="btn btn-dark ml-2" href="edit/">Editar</a>
-            {% endif %}
             <a class="btn btn-dark ml-2" href="/store/catalog/">Volver a la tienda</a>
           </div>
         </div>
@@ -44,23 +49,36 @@
   display: inline-block;
 }
 .out-of-stock {
-            opacity: 0.5; /* Reducir opacidad */
-            filter: grayscale(80%); /* Convertir a escala de grises */
-        }
-        
-        .out-of-stock-label {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 24px;
-            color: red;
-            font-weight: bold;
-        }
-    
-        /* Asegura que la imagen esté posicionada de manera relativa para que el texto AGOTADO esté sobre ella */
-        .position-relative {
-            position: relative;
-        }
+  opacity: 0.5; /* Reducir opacidad */
+  filter: grayscale(80%); /* Convertir a escala de grises */
+}
+.out-of-stock-label {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 24px;
+  color: red;
+  font-weight: bold;
+}
+/* Asegura que la imagen esté posicionada de manera relativa para que el texto AGOTADO esté sobre ella */
+.position-relative {
+  position: relative;
+}
+
+/* Ajustes para los botones de Font Awesome */
+.btn-icon {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  font-size: 16px;
+  padding: 8px 12px;
+  border-radius: 4px;
+}
 </style>
+
+<!-- Asegúrate de tener Font Awesome incluido en tu HTML -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
 {% endblock content %}

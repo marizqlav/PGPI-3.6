@@ -1,13 +1,20 @@
 {% extends 'store/main.html' %}
 {% load static %}
 {% block content %}
+<div class="row">
+    <div class="col-lg-12 mb-4">
+        {% if user.is_staff %}
+            <a href="{% url 'add_product' %}" class="btn btn-dark">Añadir Producto</a>
+        {% endif %}
+    </div>
+</div>
     <div class="row">
         <div class="col-lg-8 align-self-end">
             <form method="get" class="form-inline">
                 <input type="hidden" name="product_type" value="{{ request.GET.product_type }}">
                 <input type="hidden" name="maker" value="{{ request.GET.maker }}">
                 <input type="text" name="search" placeholder="Buscar productos..." class="form-control mr-2 flex-grow-1" value="{{ request.GET.search }}">
-                <input type="submit" value="Buscar" class="btn btn-primary">
+                <input type="submit" value="Buscar" class="btn btn-dark">
             </form>
         </div>
         <div class="col-lg-2 align-self-end">

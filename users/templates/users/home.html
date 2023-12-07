@@ -1,5 +1,5 @@
 {% extends "users/base.html" %}
-{% block title %} Home Page {% endblock title%}
+{% block title %} Página de usuarios {% endblock title%}
 {% block content %}
     <div class="jumbotron">
         <h1 class="display-4">Bienvenido, {{user.first_name.title|default:'actualmente no tienes la sesión iniciada.'}}</h1>

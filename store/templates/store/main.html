@@ -133,12 +133,20 @@
 			  <a class="nav-link" href="/claims/claims/admin">Todas las reclamaciones</a>
 		  </li>
 	 	 {% endif %}
+		  {% if user.is_staff %}
+		  <li class="nav-item">
+			  <a class="nav-link" href="/users/admin">Gestionar usuarios</a>
+		  </li>
+	 	 {% endif %}
 	    </ul>
+		
 	    <div class="form-inline my-2 my-lg-0">
-
 			<div class="form-inline my-2 my-lg-0">
 				<div class="collapse navbar-collapse" id="navbarCollapse">
 				  <div class="navbar-nav ml-auto">
+					{% if user.is_staff %}
+					<a href="/admin/" class="nav-item nav-link">ADMINISTRADOR</a>
+					{% endif %}
 					{% if user.is_authenticated %}
 					  <a href="{% url 'users-profile' %}" class="nav-item nav-link">Mi perfil</a>
 					  <a href="{% url 'logout' %}" class="nav-item nav-link">Cerrar sesión</a>
@@ -198,5 +206,59 @@
 		</div>
 	  </footer>
 
+	  <div id="cookieConsent" class="alert alert-dark alert-dismissible fade show fixed-bottom" role="alert">
+		<div class="container">
+			<div class="row align-items-center">
+				<div class="col-md-10">
+					Este sitio web utiliza cookies para asegurar que obtengas la mejor experiencia en nuestro sitio web.
+				</div>
+				<div class="col-md-2 text-right">
+					<button type="button" class="btn btn-primary btn-sm accept" aria-label="Close">
+						Aceptar
+					</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script>
+		document.addEventListener("DOMContentLoaded", function () {
+			var cookieConsent = document.getElementById('cookieConsent');
+			var acceptButton = document.querySelector('#cookieConsent .accept');
+	
+			var isCookieAccepted = localStorage.getItem('cookieAccepted');
+	
+			if (!isCookieAccepted) {
+				cookieConsent.classList.add('show');
+			}
+	
+			acceptButton.addEventListener('click', function () {
+				localStorage.setItem('cookieAccepted', true);
+				cookieConsent.classList.remove('show');
+			});
+	
+			// Si ya se aceptaron las cookies, ocultar el aviso al cargar la página
+			if (isCookieAccepted) {
+				cookieConsent.style.display = 'none';
+			}
+		});
+	</script>
+	<style>
+		#cookieConsent {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 15px;
+    background-color: #f0f0f0;
+    color: #333;
+    z-index: 1000;
+    display: none; /* inicialmente oculto */
+}
+
+#cookieConsent.show {
+    display: block; /* mostrar cuando tiene la clase "show" */
+}
+	</style>
 </body>
 </html>

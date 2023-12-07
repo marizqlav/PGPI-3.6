@@ -2,6 +2,13 @@
 {% load static %}
 {% block content %}
 <div class="row">
+    <div class="col-lg-12 mb-4">
+        {% if user.is_staff %}
+            <a href="{% url 'add_product' %}" class="btn btn-dark">Añadir Producto</a>
+        {% endif %}
+    </div>
+</div>
+<div class="row">
     {% for product in products %}
         <div class="col-lg-4">
             <div class="position-relative">

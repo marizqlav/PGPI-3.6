@@ -4,6 +4,7 @@ from django.contrib.auth.views import LoginView, PasswordResetView, PasswordChan
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
 from django.views import View
+from django.contrib.admin.views.decorators import staff_member_required
 from store.utils import cookieCart, cartData, guestOrder
 from store.models import Customer
 from django.http import HttpResponse
@@ -134,14 +135,11 @@ def profile(request):
     return render(request, 'users/profile.html', {'user_form': user_form, 'profile_form': profile_form,'cartItems':cartItems})
 
 @login_required
+@staff_member_required
 def admin_users(request):
     data = cartData(request)
     cartItems = data['cartItems']
-    if request.user.is_superuser:
-
-        return render(request, 'users/admin.html', {'users': Profile.objects.all(),'cartItems':cartItems})
-    else:
-        return HttpResponse("Permiso denegado")
+    return render(request, 'users/admin.html', {'users': Profile.objects.all(),'cartItems':cartItems})
 
 @login_required
 def user_delete(request, username):
@@ -165,5 +163,77 @@ def logout_view(request):
     logout(request)
     return render(request,'users/logout.html',{'cartItems':cartItems}) 
 
+from django.shortcuts import get_object_or_404
+
+@login_required
+@staff_member_required
+def update_user(request, username):
+    if request.user.is_staff:
+        user = get_object_or_404(User, username=username)
+        user_profile = Profile.objects.get(user=user)
+
+        if request.method == 'POST':
+            user_form = UpdateUserForm(request.POST, instance=user)
+            if user_form.is_valid():
+                user_form.save()
+                messages.success(request, 'Usuario actualizado correctamente')
+                return redirect('admin-users-list')
+        else:
+            user_form = UpdateUserForm(instance=user)
+
+        return render(request, 'users/update_user.html', {'user_form': user_form})
+    else:
+        return HttpResponse("Permiso denegado")
+    
+@login_required
+@staff_member_required
+def delete_user(request, username):
+    if request.method == 'POST':
+        user_profile = Profile.objects.get(user__username=username)
+        user = User.objects.get(username=username)
+        
+        # Verificar si se confirma la eliminación
+        if 'confirm-delete' in request.POST:
+            user_profile.delete()
+            user.delete()
+            messages.success(request, 'Usuario eliminado correctamente')
+            return redirect('admin-users-list')
+        else:
+            return redirect('admin-users-list')  # Redirigir si no se confirma la eliminación
+    
+    return render(request, 'users/delete_user.html', {'username': username})
+
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import User
+from django.contrib.auth.decorators import login_required
+from django.contrib.admin.views.decorators import staff_member_required
+
+from django.contrib.auth.forms import UserCreationForm
+from django.shortcuts import render, redirect
+from users.forms import ProfileForm  # Asegúrate de tener importado correctamente el formulario de perfil
+from .forms import CustomUserCreationForm
 
 
+@login_required
+@staff_member_required
+def admin_create_user(request):
+    if request.method == 'POST':
+        user_form = CustomUserCreationForm(request.POST)  # Usa tu formulario personalizado
+        if user_form.is_valid():
+            user = user_form.save(commit=False)
+            user.first_name = user_form.cleaned_data['first_name']  # Agrega el primer nombre
+            user.last_name = user_form.cleaned_data['last_name']  # Agrega el apellido
+            user.save()
+
+            # Crear el Customer asociado al usuario
+            customer = Customer.objects.create(
+                user=user,
+                name=user.username,
+                email=user.email
+            )
+
+            return redirect('admin-users-list')  # Redirige a la lista de usuarios después de crear uno nuevo
+    else:
+        user_form = CustomUserCreationForm()
+    
+    return render(request, 'users/create_user.html', {'user_form': user_form})

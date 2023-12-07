@@ -38,5 +38,11 @@ urlpatterns = [
     path('admin/delete/<str:username>', user_delete),
      path('login_error/', views.login_error, name='login_error'),
 
+    path('admin/users/', views.admin_users, name='admin-users-list'),
+    path('admin/users/create/', views.admin_create_user, name='admin-users-create'),
+    path('admin/users/update/<str:username>/', views.update_user, name='admin-users-update'),
+    path('admin/users/delete/<str:username>/', views.delete_user, name='admin-users-delete'),
+    
+
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
