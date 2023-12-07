@@ -14,9 +14,15 @@
                 <tr>
                     <th><h5>Artículos: <strong>{{ order.get_cart_items }}</strong></h5></th>
                     <th><h5>Total:<strong> {{ order.get_cart_total|floatformat:2 }}€</strong></h5></th>
-                    <th>
-                        <a style="float:right; margin:5px;" class="btn btn-success" href="{% url 'checkout' %}">Continuar</a>
-                    </th>
+                    {% if has_all_types %}
+                        <th>
+                            <a style="float:right; margin:5px;" class="btn btn-success" href="{% url 'checkout' %}">Continuar</a>
+                        </th>
+                    {% else %}
+                        <p style="background-color: rgb(255, 219, 225); color: red; padding: 10px; border-radius: 5px;">
+                            Por favor, añade al menos un artículo de cada tipo al carrito para continuar. FALTAN: {{ missing_types|join:", " }}
+                        </p>
+                    {% endif %}
                 </tr>
             </table>
         </div>
@@ -30,29 +36,38 @@
                         <th>Artículo</th>
                         <th>Precio</th>
                         <th>Cantidad</th>
+                        <th>Tipo</th>
                         <th>Total</th>
                         <th></th>
                     </tr>
                 </thead>
                 <tbody>
-                    {% for item in items %}
+                    {% for product_type in product_types %}
                     <tr>
-                        <td><img class="row-image" src="{{ item.product.imageURL }}"></td>
-                        <td>{{ item.product.name }}</td>
-                        <td>{{ item.product.price|floatformat:2 }}€</td>
-                        <td>
-                            {{ item.quantity }}&nbsp;
-                            <div class="quantity">
-                                <img data-product="{{ item.product.id }}" data-action="add" data-url="{% url 'update_item' %}" class="chg-quantity update-cart" src="{% static 'images/arrow-up.png' %}">
-                                <img data-product="{{ item.product.id }}" data-action="remove" data-url="{% url 'update_item' %}" class="chg-quantity update-cart" src="{% static 'images/arrow-down.png' %}">
-                            </div>
-                        </td>
-                        <td>
-                            <a data-product="{{ item.product.id }}" data-action="clear" data-url="{% url 'update_item' %}" class="chg-quantity update-cart">
-								<i class="fas fa-trash-alt"></i>
-							</a>
-                        </td>
+                        <td colspan="6" style="background-color: rgb(46, 46, 46); font-size: 0.8em;"><h6 style="color: white;">{{ product_type }}</h6></td>
                     </tr>
+                        {% for item in items %}
+                            {% if item.product.type == product_type %}
+                                <tr>
+                                    <td><img class="row-image" src="{{ item.product.imageURL }}"></td>
+                                    <td>{{ item.product.name }}</td>
+                                    <td>{{ item.product.price|floatformat:2 }}€</td>
+                                    <td>{{ item.product.type }}</td>
+                                    <td>
+                                        {{ item.quantity }}&nbsp;
+                                        <div class="quantity">
+                                            <img data-product="{{ item.product.id }}" data-action="add" data-url="{% url 'update_item' %}" class="chg-quantity update-cart" src="{% static 'images/arrow-up.png' %}">
+                                            <img data-product="{{ item.product.id }}" data-action="remove" data-url="{% url 'update_item' %}" class="chg-quantity update-cart" src="{% static 'images/arrow-down.png' %}">
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <a data-product="{{ item.product.id }}" data-action="clear" data-url="{% url 'update_item' %}" class="chg-quantity update-cart">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            {% endif %}
+                        {% endfor %}
                     {% endfor %}
                 </tbody>
             </table>
@@ -60,3 +75,4 @@
     </div>
 </div>
 {% endblock content %}
+

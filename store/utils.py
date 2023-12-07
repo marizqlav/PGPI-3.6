@@ -11,6 +11,7 @@ def cookieCart(request):
 		print('CART:', cart)
 
 	items = []
+	types = []
 	order = {'get_cart_total':0, 'get_cart_items':0, 'shipping':False}
 	cartItems = order['get_cart_items']
 
@@ -28,32 +29,38 @@ def cookieCart(request):
 
 				item = {
 				'id':product.id,
-				'product':{'id':product.id,'name':product.name, 'price':product.price, 
+				'product':{'id':product.id,'name':product.name, 'price':product.price, 'type': product.type,
 				'imageURL':product.imageURL}, 'quantity':cart[i]['quantity'],
 				'digital':product.digital,'get_total':total,
 				}
 				items.append(item)
+				types.append(product.type)
 
 				if product.digital == False:
 					order['shipping'] = True
 		except:
 			pass
 			
-	return {'cartItems':cartItems ,'order':order, 'items':items}
+	return {'cartItems':cartItems ,'order':order, 'items':items, 'types':types}
 
 def cartData(request):
-	if request.user.is_authenticated:
-		customer = request.user.customer
-		order, created = Order.objects.get_or_create(customer=customer, complete=False)
-		items = order.orderitem_set.all()
-		cartItems = order.get_cart_items
-	else:
-		cookieData = cookieCart(request)
-		cartItems = cookieData['cartItems']
-		order = cookieData['order']
-		items = cookieData['items']
+    types = []  # Initialize types
+    if request.user.is_authenticated:
+        customer = request.user.customer
+        order, created = Order.objects.get_or_create(customer=customer, complete=False)
+        items = order.orderitem_set.all()
+        cartItems = order.get_cart_items
+        # Populate types for authenticated users
+        for item in items:
+            types.append(item.product.type)
+    else:
+        cookieData = cookieCart(request)
+        cartItems = cookieData['cartItems']
+        order = cookieData['order']
+        items = cookieData['items']
+        types = cookieData['types']
 
-	return {'cartItems':cartItems ,'order':order, 'items':items}
+    return {'cartItems':cartItems ,'order':order, 'items':items, 'types':types}
 
 	
 def guestOrder(request, data):
