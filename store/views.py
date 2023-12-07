@@ -183,14 +183,15 @@ def create_checkout_session(request):
 last_session_id = None
 last_session_request = None
 
-def payment_sucess(request):
+def payment_success(request):
     global last_session_id
     global last_session_request
+    
     if request.GET['session_id'] == last_session_id:
         return
     last_session_id = request.GET['session_id']
     processOrder(last_session_request)
-
+    
     return render(request, 'store/payment-sucess.html')
 
 def payment_cancelled(request):
@@ -240,6 +241,61 @@ def processOrder(request):
             product = item.product
             product.stock_no -= item.quantity
             product.save()
+    
+    try:
+        # Buscar el pedido asociado a la sesión
+        
+
+        # Obtener los artículos del pedido
+        order_items = OrderItem.objects.filter(order=order)
+        if request.user.is_authenticated:
+            # Crear el contenido del correo electrónico
+            email_subject = f'Nuevo pedido - ID: {order.id}'
+            email_body = f'El cliente {customer.user.first_name} {customer.user.last_name} ha realizado un nuevo pedido:\n\n'
+            
+            for item in order_items:
+                email_body += f'Producto: {item.product.name}\n'
+                email_body += f'Precio unitario: {item.product.price}€\n'
+                email_body += f'Cantidad: {item.quantity}\n'
+                email_body += f'Subtotal: {item.get_total}€\n\n'
+
+            email_body += f'Total del pedido: {order.get_cart_total}€\n'
+            email_body += f'Fecha del pedido: {order.date_ordered}\n'
+            
+            send_mail(
+                email_subject,
+                email_body,
+                'pgpitienda@gmail.com', 
+                ['pgpitienda@gmail.com', customer.user.email],  
+                fail_silently=False,
+            )
+        else:
+            name = data['form']['name']
+            email = data['form']['email']
+            email_subject = f'Nuevo pedido - ID: {order.id}'
+            email_body = f'El cliente {name} ha realizado un nuevo pedido:\n\n'
+            
+            for item in order_items:
+                email_body += f'Producto: {item.product.name}\n'
+                email_body += f'Precio unitario: {item.product.price}€\n'
+                email_body += f'Cantidad: {item.quantity}\n'
+                email_body += f'Subtotal: {item.get_total}€\n\n'
+
+            email_body += f'Total del pedido: {order.get_cart_total}€\n'
+            email_body += f'Fecha del pedido: {order.date_ordered}\n'
+            
+            send_mail(
+                email_subject,
+                email_body,
+                'pgpitienda@gmail.com', 
+                ['pgpitienda@gmail.com', email],  
+                fail_silently=False,
+            )
+
+    except Order.DoesNotExist:
+        print('No se encontró el pedido asociado a la sesión.')
+    except Exception as e:
+        print(f'Error al enviar el correo electrónico: {str(e)}')
 
     return JsonResponse('Pago realizado..', safe=False)
 
