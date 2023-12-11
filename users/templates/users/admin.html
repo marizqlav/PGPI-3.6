@@ -1,0 +1,45 @@
+{% extends "users/base.html" %}
+{% block title %} Usuarios {% endblock title %}
+{% block content %}
+
+    <div class="container p-3 my-3">
+        <a href="{% url 'admin-users-create' %}" class="btn btn-dark mb-3">Crear Usuario</a>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Nombre de Usuario</th>
+                    <th>Email</th>
+                    <th>Nombre</th>
+                    <th>Apellidos</th>
+                    <th>Avatar</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>    
+                {% for i in users %}
+                <tr>
+                    <td>
+                        {{ i.user.username }}
+                    </td>
+                    <td>
+                        {{ i.user.email }}
+                    </td>
+                    <td>
+                        {{ i.user.first_name }}
+                    </td>
+                    <td>
+                        {{ i.user.last_name }}
+                    </td>
+                    <td>
+                        <img class="rounded-circle account-img" src="{{ i.avatar.url }}" style="cursor: pointer;"/>
+                    </td>
+                    <td>
+                        <a href="{% url 'admin-users-update' i.user.username %}" class="btn btn-success">Editar</a>
+                        <a href="{% url 'admin-users-delete' i.user.username %}" class="btn btn-danger">Eliminar</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock content %}

@@ -1,0 +1,74 @@
+{% extends 'claims/base_generic.html' %}
+{% block title %}Lista de reclamaciones{% endblock title %}
+{% block content %}
+<link rel="stylesheet" type="text/css" href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css">
+{% if request.user.is_staff %}
+  <h1>Lista de reclamaciones</h1>
+  <br>
+  <div class="container bootstrap snippets bootdey">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="main-box no-header clearfix">
+                <div class="main-box-body clearfix">
+                    <div class="table-responsive">
+                        <table class="table user-list">
+                            <thead>
+                                <tr>
+                                <th><span>Título</span></th>
+                                <th><span>Usuario</span></th>
+                                <th ><span>Estado</span></th>
+                                <th><span>Fecha de creación</span></th>
+                                <th><span>Última actualización</span></th>
+                                <th>&nbsp;</th>
+                                </tr>
+                            </thead>
+                          {% for claim in claims %}
+                          <tbody>
+                              <tr>
+                                  <td>
+                                      <a href="{% url 'claim_detail' claim.id %}" class="user-link">{{ claim.title }}</a>
+                                  </td>
+                                  <td >{{ claim.user }}</td>
+                                  <td >{{ claim.status }}</td>
+                                  <td >
+                                      <span class="label label-default">{{ claim.created_at }}</span>
+                                  </td>
+                                  <td>
+                                    <span class="label label-default">{{ claim.updated_at }}</span>
+                                  </td>
+                                  <td style="width: 20%;">
+                                      <a href="{% url 'claim_detail' claim.id %}" class="table-link text-warning">
+                                          <span class="fa-stack">
+                                              <i class="fa fa-square fa-stack-2x"></i>
+                                              <i class="fa fa-search-plus fa-stack-1x fa-inverse"></i>
+                                          </span>
+                                      </a>
+                                      <a href="{% url 'claim_update' claim.id %}" class="table-link text-info">
+                                          <span class="fa-stack">
+                                              <i class="fa fa-square fa-stack-2x"></i>
+                                              <i class="fa fa-pencil fa-stack-1x fa-inverse"></i>
+                                          </span>
+                                      </a>
+                                      <a href="{% url 'claim_delete' claim.id %}" class="table-link danger">
+                                          <span class="fa-stack">
+                                              <i class="fa fa-square fa-stack-2x"></i>
+                                              <i class="fa fa-trash-o fa-stack-1x fa-inverse"></i>
+                                          </span>
+                                      </a>
+                                  </td>
+                              </tr>
+                              
+                          </tbody>
+                      
+  {% empty %}
+    <li>Todavía no se ha realizado ninguna reclamación.</li>
+  {% endfor %}
+</table>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+  {% endif %}
+{% endblock %}

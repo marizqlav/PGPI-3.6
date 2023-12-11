@@ -1,0 +1,53 @@
+{% extends "users/base.html" %}
+{% block title %}Perfil{% endblock title %}
+{% block content %}
+{% if user.is_staff %}
+<div class="alert alert-info" role="alert">
+    Eres un administrador, por lo que puedes acceder al <a href="/admin/">panel de administrador</a>.
+</div>
+{% endif %}
+    <div class="row my-3 p-3">
+        <img class="rounded-circle account-img" src="{{ user.profile.avatar.url }} " style="cursor: pointer;"/>
+    </div>
+    {% if user_form.errors %}
+        <div class="alert alert-danger alert-dismissible" role="alert">
+            <div id="form_errors">
+                {% for key, value in user_form.errors.items %}
+                    <strong>{{ value }}</strong>
+                {% endfor %}
+            </div>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    {% endif %}
+    <div class="form-content">
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="form-row">
+                <div class="col-md-5">
+                    <div class="form-group">
+                        <label class="small mb-1">Usuario:</label>
+                            {{ user_form.username }}
+                        <label class="small mb-1">Email:</label>
+                            {{ user_form.email }}
+                            <label class="small mb-1">Nombre:</label>
+                            {{ user_form.first_name }}
+                        <label class="small mb-1">Apellidos:</label>
+                            {{ user_form.last_name }}
+                    </div>
+                    <div class="form-group">
+                        <a href="{% url 'password_change' %}">Cambiar contraseña</a>
+                        <hr>
+                        <label class="small mb-1">Cambiar imagen de perfil:</label>
+                        {{ profile_form.avatar }}
+                    </div>
+                    <label class="small mb-1">Biografía:</label> {{ profile_form.bio }}
+                </div>
+            </div>
+            <br><br>
+            <button type="submit" class="btn btn-dark btn-lg">Guardar cambios</button>
+            <button type="reset" class="btn btn-dark btn-lg">Cancelar cambios</button>
+        </form>
+    </div>
+{% endblock content %}

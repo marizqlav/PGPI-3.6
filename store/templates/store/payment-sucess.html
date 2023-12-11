@@ -1,0 +1,31 @@
+{% extends 'store/main.html' %}
+{% load static %}
+{% block content %}
+    <div>
+        <h1>Pago realizado correctamente</h1>
+        <a href="/store/catalog">Volver a la tienda</a>
+    </div>
+
+    <style>
+        /* Estilos para productos sin stock */
+        .out-of-stock {
+            opacity: 0.5; /* Reducir opacidad */
+            filter: grayscale(80%); /* Convertir a escala de grises */
+        }
+        
+        .out-of-stock-label {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 24px;
+            color: red;
+            font-weight: bold;
+        }
+    
+        /* Asegura que la imagen esté posicionada de manera relativa para que el texto AGOTADO esté sobre ella */
+        .position-relative {
+            position: relative;
+        }
+    </style>
+{% endblock content %}
