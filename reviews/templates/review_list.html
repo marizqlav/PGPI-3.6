@@ -1,0 +1,73 @@
+{% extends 'base_generic.html' %}
+{% block content %}
+  <style>
+    /* Custom CSS for review layout */
+    .review {
+      border: 1px solid #ddd;
+      padding: 20px;
+      margin-bottom: 20px;
+      border-radius: 8px;
+    }
+    .review img {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+    .review .media-body {
+      margin-left: 10px;
+    }
+    .stars {
+      color: #ffc107;
+    }
+  </style>
+
+  <div class="container mt-5">
+    <h1>Opiniones</h1>
+    <hr>
+    {% if not user_has_reviewed and user.is_authenticated %}
+    <a class="btn btn-dark mb-3" href="{% url 'add_review' %}">Añadir opinión</a>
+    {% endif %}
+    <div class="row">
+      {% for review in reviews %}
+        <div class="col-md-6">
+          <div class="review">
+            <div class="media">
+              <img class="mr-3" src="{{ review.user.profile.avatar.url }}" alt="User's profile picture">
+              <div class="media-body">
+                
+                <div class="stars" style="font-size: 24px;">
+                  {% for star in "*****" %}
+                    {% if forloop.counter <= review.rating %}
+                      <i class="fas fa-star"></i>
+                    {% else %}
+                      <i class="far fa-star"></i>
+                    {% endif %}
+                  {% endfor %}
+                </div>
+                <h6 class="mt-0">Puntuación: {{review.rating}}/5</h6>
+                <h3 class="mt-0">{{ review.title }}</h3>
+                <p>{{ review.content }}</p>
+                <p>Autor: {{ review.user.username }}</p>
+                <p>Publicado el: {{ review.created_at }}</p>
+                {% if request.user == review.user %}
+                  <a class="btn btn-sm btn-primary" href="{% url 'edit_review' review.id %}">Editar</a>
+                  <a class="btn btn-sm btn-danger" href="{% url 'delete_review' review.id %}">Eliminar</a>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+      {% empty %}
+        <div class="col-md-12 text-muted">No hay opiniones aún.</div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Bootstrap JS and jQuery (Optional) -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <!-- Font Awesome (for star icons) -->
+  <script src="https://kit.fontawesome.com/a076d05399.js"></script>
+  {% endblock %}

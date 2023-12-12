@@ -1,52 +1,78 @@
 {% extends 'store/main.html' %}
 {% load static %}
+
 {% block content %}
-	<div class="row">
-		<div class="col-lg-12">
-			<div class="box-element">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 
-				<a  class="btn btn-outline-dark" href="{% url 'store' %}">&#x2190; Continue Shopping</a>
+<div class="row">
+    <div class="col-lg-12">
+        <div class="box-element">
+            <a class="btn btn-outline-dark" href="{% url 'catalog' %}">&#x2190; Seguir comprando</a>
+            <br>
+            <br>
+            <table class="table">
+                <tr>
+                    <th><h5>Artículos: <strong>{{ order.get_cart_items }}</strong></h5></th>
+                    <th><h5>Total:<strong> {{ order.get_cart_total|floatformat:2 }}€</strong></h5></th>
+                    {% if has_all_types %}
+                        <th>
+                            <a style="float:right; margin:5px;" class="btn btn-success" href="{% url 'checkout' %}">Continuar</a>
+                        </th>
+                    {% else %}
+                        <p style="background-color: rgb(255, 219, 225); color: red; padding: 10px; border-radius: 5px;">
+                            Por favor, añade al menos un artículo de cada tipo al carrito para continuar. FALTAN: {{ missing_types|join:", " }}
+                        </p>
+                    {% endif %}
+                </tr>
+            </table>
+        </div>
 
-				<br>
-				<br>
-				<table class="table">
-					<tr>
-						<th><h5>Items: <strong>{{order.get_cart_items}}</strong></h5></th>
-						<th><h5>Total:<strong> ${{order.get_cart_total|floatformat:2}}</strong></h5></th>
-						<th>
-							<a  style="float:right; margin:5px;" class="btn btn-success" href="{% url 'checkout' %}">Checkout</a>
-						</th>
-					</tr>
-				</table>
+        <br>
 
-			</div>
-
-			<br>
-			<div class="box-element">
-				<div class="cart-row">
-					<div style="flex:2"></div>
-					<div style="flex:2"><strong>Item</strong></div>
-					<div style="flex:1"><strong>Price</strong></div>
-					<div style="flex:1"><strong>Quantity</strong></div>
-					<div style="flex:1"><strong>Total</strong></div>
-				</div>
-				{% for item in items %}
-				<div class="cart-row">
-					<div style="flex:2"><img class="row-image" src="{{item.product.imageURL}}"></div>
-					<div style="flex:2"><p>{{item.product.name}}</p></div>
-					<div style="flex:1"><p>${{item.product.price|floatformat:2}}</p></div>
-					<div style="flex:1">
-						<p class="quantity">{{item.quantity}}</p>
-						<div class="quantity">
-							<img data-product="{{item.product.id}}" data-action="add" class="chg-quantity update-cart" src="{% static  'images/arrow-up.png' %}">
-					
-							<img data-product="{{item.product.id}}" data-action="remove" class="chg-quantity update-cart" src="{% static  'images/arrow-down.png' %}">
-						</div>
-					</div>
-					<div style="flex:1"><p>${{item.get_total|floatformat:2}}</p></div>
-				</div>
-				{% endfor %}
-			</div>
-		</div>
-	</div>
+        <div class="box-element">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Artículo</th>
+                        <th>Precio</th>
+                        <th>Cantidad</th>
+                        <th>Tipo</th>
+                        <th>Total</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for product_type in product_types %}
+                    <tr>
+                        <td colspan="6" style="background-color: rgb(46, 46, 46); font-size: 0.8em;"><h6 style="color: white;">{{ product_type }}</h6></td>
+                    </tr>
+                        {% for item in items %}
+                            {% if item.product.type == product_type %}
+                                <tr>
+                                    <td><img class="row-image" src="{{ item.product.imageURL }}"></td>
+                                    <td>{{ item.product.name }}</td>
+                                    <td>{{ item.product.price|floatformat:2 }}€</td>
+                                    <td>{{ item.product.type }}</td>
+                                    <td>
+                                        {{ item.quantity }}&nbsp;
+                                        <div class="quantity">
+                                            <img data-product="{{ item.product.id }}" data-action="add" data-url="{% url 'update_item' %}" class="chg-quantity update-cart" src="{% static 'images/arrow-up.png' %}">
+                                            <img data-product="{{ item.product.id }}" data-action="remove" data-url="{% url 'update_item' %}" class="chg-quantity update-cart" src="{% static 'images/arrow-down.png' %}">
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <a data-product="{{ item.product.id }}" data-action="clear" data-url="{% url 'update_item' %}" class="chg-quantity update-cart">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            {% endif %}
+                        {% endfor %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
 {% endblock content %}
+

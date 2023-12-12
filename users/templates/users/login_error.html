@@ -1,0 +1,7 @@
+{% extends 'users/base.html' %}
+
+{% block content %}
+  <h1>Usuario no identificado</h1>
+  <p>Es necesario que inicies una sesión de usuario para poder acceder a esta página.</p>
+  <a class="btn btn-dark" href="{% url 'login' %}">Iniciar sesión</a>
+{% endblock %}

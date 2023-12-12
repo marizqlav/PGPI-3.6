@@ -1,0 +1,15 @@
+{% extends 'base_generic.html' %}
+{% block content %}
+  <div class="container mt-5">
+    <h1>Error. Límite de opiniones alcanzado.</h1>
+
+    <p class="lead">Solo puedes dejar una única opinión. Si tu opinión ha cambiado, puedes editarla.</p>
+
+    <a class="btn btn-dark" href="{% url 'review_list' %}">Volver</a>
+  </div>
+
+  <!-- Bootstrap JS and jQuery (Optional) -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  {% endblock %}

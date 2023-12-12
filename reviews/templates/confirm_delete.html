@@ -1,0 +1,28 @@
+{% extends 'base_generic.html' %}
+
+{% block content %}
+  <div class="container mt-5">
+    <div class="row justify-content-center">
+      <div class="col-md-6">
+        <div class="card">
+          <div class="card-body">
+            <h1 class="card-title">Eliminar opinión</h1>
+            <p class="card-text">¿Estás seguro de que quieres eliminar esta opinión?</p>
+            
+            <form method="POST">
+              {% csrf_token %}
+              <div class="row">
+                <div class="col">
+                  <button class="btn btn-danger btn-block" type="submit">Sí, eliminar</button>
+                </div>
+                <div class="col">
+                  <a class="btn btn-dark btn-block" href="{% url 'review_list' %}">No, volver atrás</a>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

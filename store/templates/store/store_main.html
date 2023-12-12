@@ -1,0 +1,56 @@
+{% extends 'store/main.html' %}
+{% load static %}
+{% block content %}
+<div class="row">
+    {% for product in products %}
+        <div class="col-lg-4">
+            <div class="position-relative">
+                {% if product.stock_no == 0 %}
+                    <div class="out-of-stock-label">SIN STOCK</div>
+                {% endif %}
+                <img class="thumbnail {% if product.stock_no == 0 %}out-of-stock{% endif %}" src="{{product.imageURL}}">
+            </div>
+            <div class="box-element product {% if product.stock_no == 0 %}out-of-stock{% endif %}">
+                <h6><strong>{{product.name}}</strong></h6>
+                <hr>
+                <h6>Tipo: <strong>{{product.type}}</strong></h6>
+                <hr>
+                <h6>Fabricante: <strong>{{product.maker}}</strong></h6>
+                <hr>
+                <h6>Stock: <strong>{{product.stock_no}}</strong></h6>
+                <hr>
+                {% if product.stock_no == 0 %}
+                    <strong>SIN STOCK&nbsp;&nbsp;&nbsp;</strong>
+                {% else %}
+                    <button data-product="{{product.id}}" data-action="add" data-url="{% url 'update_item' %}" class="btn btn-outline-secondary add-btn update-cart">Añadir al carrito</button>
+                {% endif %}
+                <a class="btn btn-outline-success" href="/store/product/{{product.id}}">Ver</a>       
+                <h4 style="display: inline-block; float: right"><strong>{{product.price|floatformat:2}}€</strong></h4>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+
+<style>
+    /* Estilos para productos sin stock */
+    .out-of-stock {
+        opacity: 0.5; /* Reducir opacidad */
+        filter: grayscale(80%); /* Convertir a escala de grises */
+    }
+    
+    .out-of-stock-label {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 24px;
+        color: red;
+        font-weight: bold;
+    }
+
+    /* Asegura que la imagen esté posicionada de manera relativa para que el texto AGOTADO esté sobre ella */
+    .position-relative {
+        position: relative;
+    }
+</style>
+{% endblock content %}

@@ -1,0 +1,17 @@
+{% extends 'store/main.html' %}
+{% load static %}
+{% block content %}
+    <div class="container mt-5">
+        <div class="card">
+            <div class="card-header">
+                <h1 class="text-center">Seguimiento de Pedido</h1>
+            </div>
+            <div class="card-body">
+                <h5 class="card-title">ID PEDIDO: {{ order.id }}</h5>
+                <p class="card-text">Estado: {{ order.get_status_display }}</p>
+                <p class="card-text">Número de Seguimiento: {{ order.transaction_id }}</p>
+                <p class="card-text">Fecha Aproximada de Entrega: {{ order.estimated_delivery_date }}</p>
+            </div>
+        </div>
+    </div>
+{% endblock content %}
