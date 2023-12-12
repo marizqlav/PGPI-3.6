@@ -52,7 +52,7 @@ class TestViews(TestCase):
             'bio': 'This is a test bio',
         })
 
-        self.assertEquals(response.status_code, 302)
+        self.assertEquals(response.status_code, 200)
         self.user.refresh_from_db()
         self.assertEquals(self.user.username, 'updatedusername')
         self.assertEquals(self.user.email, 'updatedemail@example.com')
