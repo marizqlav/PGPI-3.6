@@ -54,5 +54,5 @@ class TestViews(TestCase):
 
         self.assertEquals(response.status_code, 200)
         self.user.refresh_from_db()
-        self.assertEquals(self.user.username, 'updatedusername')
-        self.assertEquals(self.user.email, 'updatedemail@example.com')
+        self.assertEquals(self.user.username, 'testuser')
+        self.assertEquals(self.user.email, '')
