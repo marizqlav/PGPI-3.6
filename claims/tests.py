@@ -3,11 +3,13 @@ from django.test import TestCase, Client
 from django.urls import reverse
 from django.contrib.auth.models import User
 from .models import Claim
+from store.models import Customer
 
 class ClaimTests(TestCase):
     def setUp(self):
         self.client = Client()
         self.user = User.objects.create_user(username='testuser', password='12345')
+        self.customer = Customer.objects.create(user=self.user, name='Test Customer', email='test@example.com')
         self.claim = Claim.objects.create(user=self.user, title='Test Claim', description='This is a test claim.')
 
     def test_claim_list(self):

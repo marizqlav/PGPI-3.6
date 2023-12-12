@@ -13,11 +13,12 @@ RUN pip install gunicorn
 RUN pip install ipdb
 RUN pip install ipython
 
+RUN pip install Django==3.0.14
 RUN pip install Pillow==9.3.0
 RUN pip install stripe==2.63.0
-RUN pip install django-material-admin == 1.8.6
-RUN pip install python-dateutil == 2.8.2
-RUN pip install djangorestframework == 3.14.0
+RUN pip install django-material-admin
+RUN pip install python-dateutil
+RUN pip install djangorestframework
 
 
 RUN mkdir /app/ecommerce
