@@ -10,14 +10,3 @@ venv/
 
 .idea/
 env/
-*.pyc
-ecommerce/__pycache__/settings.cpython-311.pyc
-ecommerce/__pycache__/urls.cpython-311.pyc
-store/__pycache__/models.cpython-311.pyc
-store/__pycache__/urls.cpython-311.pyc
-store/__pycache__/utils.cpython-311.pyc
-store/__pycache__/views.cpython-311.pyc
-store/migrations/__pycache__/0003_alter_customer_id_alter_order_id_alter_orderitem_id_and_more.cpython-311.pyc
-store/migrations/__pycache__/0004_product_type.cpython-311.pyc
-store/migrations/__pycache__/0005_product_maker.cpython-311.pyc
-store/migrations/__pycache__/0006_alter_product_type.cpython-311.pyc
