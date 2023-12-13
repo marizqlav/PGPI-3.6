@@ -23,6 +23,11 @@
                             Por favor, añade al menos un artículo de cada tipo al carrito para continuar. FALTAN: {{ missing_types|join:", " }}
                         </p>
                     {% endif %}
+                    {% if is_free %}
+                        <p style="background-color: rgb(198, 233, 199); color: rgb(36, 105, 26); padding: 10px; border-radius: 5px;">
+                            ¡Enhorabuena! El envío será gratuito al ser una compra superior a 400€
+                        </p>
+                    {% endif %}
                 </tr>
             </table>
         </div>

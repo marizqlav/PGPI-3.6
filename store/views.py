@@ -103,8 +103,10 @@ def cart(request):
 	has_all_types = product_types == set([product_type[0] for product_type in PRODUCT_TYPES])
 	missing_types = set([product_type[0] for product_type in PRODUCT_TYPES]) - product_types
 
+	is_free = order['get_cart_total'] > 400.0
+
 	#context = {'items':items, 'order':order, 'cartItems':cartItems}
-	context = {'items':items, 'product_types': product_types, 'order':order, 'cartItems':cartItems, 'has_all_types': has_all_types, 'missing_types': missing_types}
+	context = {'items':items, 'product_types': product_types, 'order':order, 'cartItems':cartItems, 'has_all_types': has_all_types, 'missing_types': missing_types, 'is_free': is_free}
 	return render(request, 'store/cart.html', context)
 
 def checkout(request):
@@ -306,10 +308,41 @@ def track_order(request, order_id):
     data = cartData(request)
     cartItems = data['cartItems']
     order = get_object_or_404(Order, id=order_id)
+    shippingAddress = ShippingAddress.objects.filter(order=order).first()
     if order.customer != request.user.customer and not request.user.is_staff:
         raise PermissionDenied
-    context = {'order': order,'cartItems':cartItems}
+    context = {'order': order,'cartItems':cartItems, "shippingAddress":shippingAddress}
     return render(request, 'store/track_order.html', context)
+
+def update_shipping_address(request, order_id):
+    if request.method == 'POST':
+        order = get_object_or_404(Order, id=order_id)
+        if order.customer != request.user.customer and not request.user.is_staff: 
+            raise PermissionDenied
+
+        street = request.POST.get('street')
+        city = request.POST.get('city')
+        country = request.POST.get('country')
+        postal_code = request.POST.get('postalCode')
+
+        
+        shipping_address, created = ShippingAddress.objects.get_or_create(order=order, defaults={
+            'address': street,
+            'city': city,
+            'state': country,
+            'zipcode': postal_code,
+        })
+
+        
+        if not created:
+            shipping_address.address = street
+            shipping_address.city = city
+            shipping_address.state = country
+            shipping_address.zipcode = postal_code
+            shipping_address.save()
+
+        
+        return redirect('track_order', order_id=order_id)
 
 @login_required
 def customer_orders(request, customer_id):
