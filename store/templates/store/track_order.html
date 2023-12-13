@@ -1,17 +1,82 @@
 {% extends 'store/main.html' %}
 {% load static %}
 {% block content %}
-    <div class="container mt-5">
-        <div class="card">
-            <div class="card-header">
-                <h1 class="text-center">Seguimiento de Pedido</h1>
-            </div>
-            <div class="card-body">
-                <h5 class="card-title">ID PEDIDO: {{ order.id }}</h5>
-                <p class="card-text">Estado: {{ order.get_status_display }}</p>
-                <p class="card-text">Número de Seguimiento: {{ order.transaction_id }}</p>
-                <p class="card-text">Fecha Aproximada de Entrega: {{ order.estimated_delivery_date }}</p>
-            </div>
+<div class="container mt-5">
+    <div class="card">
+        <div class="card-header">
+            <h1 class="text-center">Seguimiento de Pedido</h1>
+        </div>
+        <div class="card-body">
+            <h5 class="card-title">ID PEDIDO: {{ order.id }}</h5>
+            <p class="card-text">Estado: {{ order.get_status_display }}</p>
+            <p class="card-text">Número de Seguimiento: {{ order.transaction_id }}</p>
+            <p class="card-text">Fecha Aproximada de Entrega: {{ order.estimated_delivery_date }}</p>
+            {% if shippingAddress %}
+                {% if order.get_status_display != "Entregado" %}
+                    <h5 class="card-title">Dirección de Envío:</h5>
+                    <form method="POST" action="{% url 'update_shipping_address' order.id %}" class="needs-validation">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="street" class="form-label">Calle:</label>
+                            <input type="text" class="form-control" id="street" name="street" value="{{ shippingAddress.address }}" required>
+                            <div class="invalid-feedback">
+                                Por favor, ingresa la calle.
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col">
+                                <label for="city" class="form-label">Ciudad:</label>
+                                <input type="text" class="form-control" id="city" name="city" pattern="\p{L}+" title="Por favor, ingresa solo letras" value="{{ shippingAddress.city }}" required>
+                                <div class="invalid-feedback">
+                                    Por favor, ingresa la ciudad.
+                                </div>
+                            </div>
+                            <div class="col">
+                                <label for="country" class="form-label">País:</label>
+                                <input type="text" class="form-control" id="country" name="country" pattern="\p{L}+" title="Por favor, ingresa solo letras" value="{{ shippingAddress.state }}" required>
+                                <div class="invalid-feedback">
+                                    Por favor, ingresa el país.
+                                </div>
+                            </div>
+                            <div class="col">
+                                <label for="postalCode" class="form-label">Código Postal:</label>
+                                <input type="text" class="form-control" id="postalCode" name="postalCode" pattern="[0-9]{5}" title="Ingresa un código postal de 5 dígitos" value="{{ shippingAddress.zipcode }}" required>
+                                <div class="invalid-feedback">
+                                    Por favor, ingresa el código postal.
+                                </div>
+                            </div>
+                        </div>
+                        <button class="btn btn-dark" type="submit">Actualizar dirección</button>
+                    </form>
+                    {% else %}
+                    <h5 class="card-title">Este pedido ya ha sido entregado en:</h5>
+                    <form method="POST" action="{% url 'update_shipping_address' order.id %}" class="needs-validation" novalidate>
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="street" class="form-label">Calle:</label>
+                            <input type="text" class="form-control" id="street" name="street" value="{{ shippingAddress.address }}" readonly>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col">
+                                <label for="city" class="form-label">Ciudad:</label>
+                                <input type="text" class="form-control" id="city" name="city" value="{{ shippingAddress.city }}" readonly>
+                            </div>
+                            <div class="col">
+                                <label for="country" class="form-label">País:</label>
+                                <input type="text" class="form-control" id="country" name="country" value="{{ shippingAddress.state }}" readonly>
+                            </div>
+                            <div class="col">
+                                <label for="postalCode" class="form-label">Código Postal:</label>
+                                <input type="text" class="form-control" id="postalCode" name="postalCode" pattern="\d*" title="Por favor, ingresa solo números" value="{{ shippingAddress.zipcode }}" readonly>
+
+                            </div>
+                        </div>
+                    </form>
+                {% endif %}
+            {% else %}
+                <h5 class="card-title">Este pedido será recogido en tienda.</h5>
+            {% endif %}
         </div>
     </div>
+</div>
 {% endblock content %}

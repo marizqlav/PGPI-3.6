@@ -28,6 +28,8 @@ urlpatterns = [
     path('payment-cancelled/', views.payment_cancelled),
 
     path('update_order/<int:order_id>/', views.update_order, name='update_order'),
+    path('update_shipping_address/<int:order_id>/', views.update_shipping_address, name='update_shipping_address'),
+
 
 
 
