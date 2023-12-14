@@ -101,6 +101,8 @@ def cart(request):
 	is_free = False
 	if not request.user.is_authenticated:
 		is_free = order['get_cart_total'] > 400.0
+	else:
+		is_free = data['order'].get_cart_total > 400.0
 	
 	#context = {'items':items, 'order':order, 'cartItems':cartItems}
 	context = {'items':items, 'product_types': product_types, 'order':order, 'cartItems':cartItems, 'has_all_types': has_all_types, 'missing_types': missing_types, 'is_free': is_free}
