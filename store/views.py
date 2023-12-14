@@ -98,8 +98,10 @@ def cart(request):
 	has_all_types = product_types == set([product_type[0] for product_type in PRODUCT_TYPES])
 	missing_types = set([product_type[0] for product_type in PRODUCT_TYPES]) - product_types
 
-	is_free = order['get_cart_total'] > 400.0
-
+	is_free = False
+	if not request.user.is_authenticated:
+		is_free = order['get_cart_total'] > 400.0
+	
 	#context = {'items':items, 'order':order, 'cartItems':cartItems}
 	context = {'items':items, 'product_types': product_types, 'order':order, 'cartItems':cartItems, 'has_all_types': has_all_types, 'missing_types': missing_types, 'is_free': is_free}
 	return render(request, 'store/cart.html', context)
